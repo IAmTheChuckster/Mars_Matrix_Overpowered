@@ -20,14 +20,14 @@ Open the **[Web Patcher](https://iamthechuckster.github.io/game/)** (`index.html
 ### With Python
 
 ## Testing
-This patch was tested with MAME 0.289 and [CV1k core for the MiSTer FPGA by Raki](https://www.patreon.com/c/ikamusume/posts)<br>
+This patch was tested with MAME 0.289<br>
 It may even work on a PCB but do so on your own risk.
 
 ## Credits
 
 - [IAmTheChuckster](https://github.com/IAmTheChuckster)  project, testing
 - [Claude](https://claude.ai) (Anthropic)  reverse engineering and patcher code
-- Tested on the CV1k core for the MiSTer FPGA by [Raki](https://www.patreon.com/c/ikamusume/posts)
+- Tested on the MiSTer FPGA by
 
 ## Disclaimer
 
