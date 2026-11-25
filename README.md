@@ -15,7 +15,7 @@ Source code: http://bitbucket.org/trap15/mmatrix_unfuck/
 ## Patching the game
 
 ### Web Patcher
-Open the **[Web Patcher](https://iamthechuckster.github.io/game/)** (`index.html`) and drop in your `rom.zip`. It checks the file names and CRCs, builds the patched files automatically, and lets you download just the patched files or a complete `rom.zip` romset. Everything runs in your browser; nothing is uploaded.
+Open the **[Web Patcher](https://iamthechuckster.github.io/Mars_Matrix_Overpowered/)** (`index.html`) and drop in your `mmatrix.zip`. It checks the file names and CRCs, builds the patched files automatically, and lets you download the complete `mmatrix.zip` romset. Everything runs in your browser; nothing is uploaded.
 
 ### With Python
 
