@@ -1,4 +1,4 @@
-# Arcade Rom Template
+# Mars Matrix Overpowered
 
 A gameplay patch for `Game`<br>
 This repository holds only source, tools and notes. **No ROM data is included**; you patch your own legally owned dump.
