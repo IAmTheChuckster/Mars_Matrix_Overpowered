@@ -10,7 +10,7 @@ I did all the testing and planning.
 
 ## Change Notes
 This patch also includes the Mars Matrix Improvement patch by Alex "trap15" Marshall which was released on the 25th anniversary.<br> 
-Source code:http://bitbucket.org/trap15/mmatrix_unfuck/
+Source code: http://bitbucket.org/trap15/mmatrix_unfuck/
 
 ## Patching the game
 
