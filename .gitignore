@@ -1,0 +1,3 @@
+# Never commit ROM data
+__pycache__/
+roms/

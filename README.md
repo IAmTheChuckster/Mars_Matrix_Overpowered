@@ -1,9 +1,7 @@
 # Mars Matrix Overpowered
 
-A gameplay patch for `Game`<br>
+A gameplay patch for `Mars Matrix: Hyper Solid Shooting (Japan 000412)`<br>
 This repository holds only source, tools and notes. **No ROM data is included**; you patch your own legally owned dump.
-## To Do:
-
    
 ## About
 Why did I make this? Because it's fun and for my own personal research to see the capabilities of Claude.<br>
@@ -31,4 +29,4 @@ It may even work on a PCB but do so on your own risk.
 
 ## Disclaimer
 
-This repository contains a fan-made patch for research and technical analysis. The repository does not intentionally distribute the original game ROM, executable, or game assets. Users must obtain their own copy of the original game. This project is unofficial and is not affiliated with, endorsed by, or authorized by CAVE. All rights to the original game and its associated intellectual property remain with their respective rights holders. No license to third-party copyrighted material is granted by this repository.
+This repository contains a fan-made patch for research and technical analysis. The repository does not intentionally distribute the original game ROM, executable, or game assets. Users must obtain their own copy of the original game. This project is unofficial and is not affiliated with, endorsed by, or authorized by Takumi and Capcom. All rights to the original game and its associated intellectual property remain with their respective rights holders. No license to third-party copyrighted material is granted by this repository.
