@@ -1,5 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Dangun Feveron Patcher</title>
+<title>Mars Matrix Overpowered</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Condensed:wght@600;700&display=swap">
@@ -102,279 +102,78 @@ footer { font-size: 13px; color: var(--muted); text-align: center; }
 </head><body>
 <div class="wrap">
   <header>
-    <div class="eyebrow">Dangun Feveron &middot; gameplay patch</div>
-    <h1>Dangun Feveron Patcher</h1>
-    <p class="lede">Load your own <span class="mono">dfeveron</span> romset (<span class="mono">dfeveron.zip</span>, or <span class="mono">feversos.zip</span> with the <span class="mono">dfeveron/</span> folder inside). The page checks every file against the known CRC32, then patches the program ROMs <span class="mono">cv01-u33.bin</span> and <span class="mono">cv01-u34.bin</span>.</p>
+    <div class="eyebrow">Mars Matrix &middot; gameplay patch &middot; Build <span id="build-no"></span></div>
+    <h1>Mars Matrix Overpowered</h1>
+    <p class="lede">Load your own MAME <span class="mono">mmatrix.zip</span>. The page checks the Japanese (<span class="mono">mmatrixj</span>) files against their known CRC32, applies the trap15 Mars Matrix Improvement v1.0.0 patch, and gives you <span class="mono">mmatrixop.zip</span>.</p>
     <span class="privacy">Everything runs in your browser. Your ROMs are never uploaded.</span>
   </header>
 
   <section aria-labelledby="h-load">
     <div class="step"><span class="step-no">1</span><h2 id="h-load">Load your romset</h2></div>
     <label class="drop" id="drop">
-      <input type="file" id="file" class="visually-hidden" multiple>
-      <strong>Drop <span class="mono">dfeveron.zip</span> or <span class="mono">feversos.zip</span> here, or click to choose</strong>
-      <span class="hint">A MAME romset zip works best. Loose <span class="mono">cv01-u33.bin</span> and <span class="mono">cv01-u34.bin</span> files are fine too.</span>
+      <input type="file" id="file" class="visually-hidden" accept=".zip">
+      <strong>Drop <span class="mono">mmatrix.zip</span> here, or click to choose</strong>
       <span class="src" id="src" hidden></span>
     </label>
   </section>
 
   <section aria-labelledby="h-check">
     <div class="step"><span class="step-no">2</span><h2 id="h-check">Check files</h2></div>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>File</th><th>Size</th><th>Expected CRC32</th><th>Found CRC32</th><th>Status</th></tr></thead>
-        <tbody id="check-body"></tbody>
-      </table>
-    </div>
-    <div class="notice" id="check-msg">Waiting for a romset. The table shows what the page will look for.</div>
+    <div class="table-scroll"><table>
+      <thead><tr><th>File</th><th>Size</th><th>Expected CRC32</th><th>Found CRC32</th><th>Status</th></tr></thead>
+      <tbody id="check-body"></tbody>
+    </table></div>
+    <div class="notice" id="check-msg">Waiting for mmatrix.zip. The table shows what the page will look for.</div>
   </section>
 
   <section aria-labelledby="h-out">
     <div class="step"><span class="step-no">3</span><h2 id="h-out">Download the patched romset</h2></div>
-    <div class="row" id="build-row" hidden><span class="status" id="build-status"></span></div>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th>File</th><th>CRC32</th><th>SHA-1</th><th>Status</th></tr></thead>
-        <tbody id="out-body"></tbody>
-      </table>
-    </div>
+    <div class="table-scroll"><table>
+      <thead><tr><th>File</th><th>CRC32</th><th>Status</th></tr></thead>
+      <tbody id="out-body"></tbody>
+    </table></div>
     <div class="notice" id="out-notes" hidden></div>
-    <div class="row" id="dl-row">
-      <button class="primary" id="dl-romset" type="button" disabled>Download complete romset (dfeveronfever.zip)</button>
-      <button class="secondary" id="dl-mra" type="button" disabled>Download Dangun Feveron Disco Fever.mra</button>
+    <div class="row">
+      <button class="primary" id="dl-romset" type="button" disabled>Download mmatrixop.zip</button>
+      <button class="secondary" id="dl-mra" type="button" disabled>Download Mars Matrix Overpowered.mra</button>
     </div>
-    <p class="hint"><strong>Complete romset</strong> contains the patched program ROMs, renamed <span class="mono">cv01-u33fever.bin</span> and <span class="mono">cv01-u34fever.bin</span>, plus the other six files from your zip, unchanged. Your original files are never modified. <strong>Dangun Feveron Disco Fever.mra</strong> is for the MiSTer Cave core; it carries the patched CRCs and expects the romset as <span class="mono">dfeveronfever.zip</span>.</p>
+    <p class="hint"><span class="mono">mmatrixop.zip</span> holds the 15 files of the Japanese set with flat names: the patched files listed above, plus the rest unchanged. The <span class="mono">.mra</span> is for the MiSTer CPS2 core and also needs <span class="mono">qsound.zip</span>.</p>
   </section>
 
   <footer>No ROM data is included in this page. It only rebuilds files from the dump you supply.</footer>
 </div>
-
-<script id="core">
-// Build number (from BUILD in patch.py), notice footer field, and the ROM-check fill area. Same as patch.py.
-const BUILD = 15;   // generated by patch.py --write-web
-const FOOTER = [0x009502, "              98/09/17 VER. "];   // generated by patch.py --write-web
-const CHECKSUM_FILL = [0x0AF000, 0x0AFC00];   // generated by patch.py --write-web
-
-// Files of the dfeveron set: [size, crc32, sha1]. Same table as FILES in patch.py.
+<script>
+// Patch data generated from trap15.py output (trap15 Mars Matrix Improvement v1.0.0). See dev_notes.
+const BUILD = 6;
+const ZIP_NAME = "mmatrixop.zip", MRA_NAME = "Mars Matrix Overpowered.mra";
+// output name -> [file name inside mmatrix.zip, size, CRC32]
 const FILES = {
-  "cv01-u33.bin":        [524288,  "e53a7db3", "ddced29f78dc3cc89038757b6577ba2ba0d8b041"],
-  "cv01-u34.bin":        [524288,  "be87f19d", "595239245df3835cdf5a99a6c62480465558d8d3"],
-  "cv01-u19.bin":        [4194304, "5f5514da", "53f27364aee544572a82649c9ff29bacc642b732"],
-  "cv01-u25.bin":        [4194304, "a6f6a95d", "e1eb45cb5d0e6163edfd9d830633b913fb53c6ca"],
-  "cv01-u26.bin":        [4194304, "32edb62a", "3def74e1316b80cc25a8c3ac162cd7bcb8cc807c"],
-  "cv01-u49.bin":        [2097152, "d21cdda7", "cace4650de580c3c4a037f1f5c32bfc1846b383c"],
-  "cv01-u50.bin":        [2097152, "7a344417", "828bd8f95d2fcc34407e17629ccafc904a4ea12d"],
-  "eeprom-dfeveron.bin": [128,     "c3174959", "29b5c94722756481e4f84bfd75dee15fdb5c8cf7"],
+  "mmatrixj.key": ["mmatrixj.key", 20, 0x3b50d889],
+  "mmxj.03": ["mmxj.03", 524288, 0x1d5de213],
+  "mmxj.04": ["mmxj.04", 524288, 0xd943a339],
+  "mmxj.05": ["mmxj.05", 524288, 0x0c8b4abb],
+  "mmx.01": ["mmx.01", 131072, 0xc57e8171],
+  "mmx.11m": ["mmx.11m", 4194304, 0x4180b39f], "mmx.12m": ["mmx.12m", 4194304, 0x95e22a59],
+  "mmx.13m": ["mmx.13m", 4194304, 0x04748718], "mmx.14m": ["mmx.14m", 4194304, 0xd52bf491],
+  "mmx.15m": ["mmx.15m", 4194304, 0x38074f44], "mmx.16m": ["mmx.16m", 4194304, 0x23f70780],
+  "mmx.17m": ["mmx.17m", 4194304, 0xe4635e35], "mmx.18m": ["mmx.18m", 4194304, 0x2562c9d5],
+  "mmx.19m": ["mmx.19m", 4194304, 0x4400a3f2], "mmx.20m": ["mmx.20m", 4194304, 0x583a9687],
 };
-const PATCHED = ["cv01-u33.bin", "cv01-u34.bin"];
-// Every file the patch changes gets "fever" appended to its name in the output (same as OUT_NAMES in patch.py).
-const OUT_NAMES = { "cv01-u33.bin": "cv01-u33fever.bin", "cv01-u34.bin": "cv01-u34fever.bin" };
-const ZIP_NAME = "dfeveronfever.zip", MRA_NAME = "Dangun Feveron Disco Fever.mra";
-const MRA_TEMPLATE = "<misterromdescription>\n  <name>Dangun Feveron Disco Fever (26/11/21 Build 15)</name>\n  <mameversion>0289</mameversion>\n  <setname>dfeveronfever</setname>\n  <year>2026</year>\n  <manufacturer>CAVE</manufacturer>\n  <category>Shooter</category>\n  <rotation>vertical (ccw)</rotation>\n  <rbf>cave</rbf>\n\n  <!-- ROM data -->\n  <rom index=\"0\" zip=\"dfeveronfever.zip\" md5=\"none\" address=\"0x30000000\">\n    <!-- prog ROM -->\n    <interleave output=\"16\">\n      <part name=\"cv01-u34fever.bin\" crc=\"db6810e7\" map=\"01\" />\n      <part name=\"cv01-u33fever.bin\" crc=\"9d271333\" map=\"10\" />\n    </interleave>\n\n    <!-- EEPROM -->\n    <part name=\"eeprom-dfeveron.bin\" crc=\"c3174959\" />\n\n    <!-- sound ROM -->\n    <part name=\"cv01-u19.bin\" crc=\"5f5514da\" />\n\n    <!-- layer 0 -->\n    <part name=\"cv01-u50.bin\" crc=\"7a344417\" />\n\n    <!-- layer 1 -->\n    <part name=\"cv01-u49.bin\" crc=\"d21cdda7\" />\n\n    <!-- sprites -->\n    <part name=\"cv01-u25.bin\" crc=\"a6f6a95d\" />\n    <part name=\"cv01-u26.bin\" crc=\"32edb62a\" />\n\n    <!-- skip CRC -->\n    <patch offset=\"0x00008d94\">60 00 00 ce</patch>\n    <!-- skip slow loops -->\n    <patch offset=\"0x00008cca\">4e 71 4e 71</patch>\n    <patch offset=\"0x00008cd2\">4e 71 4e 71</patch>\n    <patch offset=\"0x00008f10\">4e 71 4e 71 </patch>\n    <patch offset=\"0x00008f14\">4e 71 4e 71</patch>\n\n    <!-- enable C button in EEPROM -->\n    <patch offset=\"0x00100002\">11 11</patch>\n    <patch offset=\"0x00100008\">00 04</patch>\n  </rom>\n\n  <!-- select game -->\n  <rom index=\"1\">\n    <part>00</part>\n  </rom>\n\n  <!-- NVRAM -->\n  <nvram index=\"2\" size=\"526\" />\n\n  <!-- high-score RAM: start, length, first/last initialization bytes -->\n  <rom index=\"4\"><part>00 10 3E B4 01 6D 02 07</part></rom>\n\n  <buttons names=\"Shot/Power Shot,Bomb,Full-Auto,-,Start,Coin,Pause,-,-,SS\" default=\"A,B,X,,R,L,Start\" />\n</misterromdescription>\n";   // generated by patch.py --write-web from mister/
+// file -> [[offset, new bytes hex], ...]; each patched file's CRC is verified before download
+const PATCHES = {"mmxj.03": [[4, "717d06e5"], [205354, "d4198f836bf39f15"]], "mmxj.05": [[105090, "e007d43e"], [105378, "ba69"], [105390, "39a9"], [105476, "5230"], [105482, "8005"], [119972, "2abf"], [125382, "b4"], [125386, "f0"], [125390, "2c01"], [125394, "6801"], [125398, "f401"], [125734, "62e4"], [125738, "8552"], [125936, "1702"], [325584, "0e8456d7f0f8"], [325768, "1498"], [325898, "7756be81688a"], [326068, "2ccb1d81"], [335948, "9905b291"], [335954, "929cd329284f09dc4d63397aff16523e7ac0f9c71f2ea8dda5803a62189028adfa5dca5f002dac030eb4df07a6a1e5d81b7dc69551f3f44c808fa0428d86d7332672c6a95d7c63096a8065308bf2"], [339992, "8cb18db8"], [345006, "7509169ead3da5e3"], [354828, "474b700a"], [354836, "7af2"], [354876, "a8ff410f"], [354908, "088d26bb"], [355106, "202032202f363131322f2036"], [355274, "4d2052412053414d525458494f2045565052574f52454445"], [355308, "42204955444c36202020"], [361876, "8b5d9ab8"], [393284, "1d627d5f0ad8daf14c45"], [394692, "a6540f63"], [394738, "ab3ef5c4"], [491520, "78484122c86a2762e7ee43e749eaa36bf3acb9e6f1ed7a2f35292eb6032cae358ca97f373484301dd7a9ba59edeb25cef4f3b206b4bcb2027e3a2df62a2eb4ca2d86b5ec7d7e732f68600b5591fc6f566c9b6a2c365c50af47571b04e68801ed062da2e83a2f80d1fc7da5748eacbcd7c6d4ac305324b70dcbf86d70ea99f058fa06b13bc378d147354b338f7bd0f5b747dc243525915ee533e926517597db3452f05410471372c73d"], [491690, "e8fcb856fc9f7f49f289a7be76854b8beea8413e76ffa4f4e6042657"], [523776, "c8f47f9b0708047bfbb01057fdbef1e00e633f39a7d4248aa8508807f19bd7b90864380e16bba1cc7c188096a8f2daebbc1582662a4681445a82512ce1dcc05dac146171b45bb54dd02fb966d1241fb1bceeaee66daf4c37820953f13c25eb7cd37dc6b5f71b410c8ab427f62e59ad58c2015d4cf2905e3b9b8b8c074a74edba8decb13195bde1721858c9b2871ff7e5398931edab18eef991c29fbb927146ff23a524aef9eeaad2e20cbed7d6ef3b2555be72fa439c6091113858bd905e443a4507f93697cd210a2fb209e5be0bc133b6e308024cde90440a3da561b0d2892a8d6dfd678e862810c1baf5980b9f2e337acfb218c169a5f8d0cf891652180641d3d8e75f5068d4b0cfd49a1f874d9a98db7991c9f7c1fc32b53480a3473e7267307269f64bdb180f501abd1a39d974d4c8ec5561dc301a3901a2f8d750168672e116d5f686e26614e2064bcab348c50db7bb17d184b4a8d5792434b54af1f11ebe1c898722bd7f0cdc2b24df78fedcc6579a7d0390a8690e60f55ea9a6a97dfbd36170ad7d9e7cecb039883dcd457e3f5550b48f70c28d1a6816"]], "mmx.01": [[8172, "dd7e01a7cd007000"], [28672, "281e3a10c0a72018d5545dcb3acb1ba7ed52cb3acb1bcb3acb1bcb3acb1b19d17d3201d07c3200d0c9"]], "mmx.14m": [[390052, "fefa"], [390056, "fe03"], [390061, "03"], [390065, "03"], [390069, "02"]], "mmx.16m": [[390052, "0602"], [390056, "fefa"], [390060, "fefa"], [390064, "fefa"], [390069, "02"]], "mmx.18m": [[389988, "fcf5"], [389992, "fd06"], [389997, "06"], [390001, "06"], [390005, "04"], [390052, "7ffd"], [390057, "01"], [390061, "01"], [390065, "01"], [390069, "01"]], "mmx.20m": [[389988, "0c04"], [389992, "fdf5"], [389996, "fdf5"], [390000, "fdf5"], [390005, "04"], [390052, "0301"], [390057, "fd"], [390061, "fd"], [390065, "fd"], [390069, "01"]]};
+const PATCHED_CRC = { "mmxj.03": 0x7782e303, "mmxj.05": 0x36f1ef1c, "mmx.01": 0x45a29ce5, "mmx.14m": 0x01eb615b, "mmx.16m": 0xd976c4eb, "mmx.18m": 0xf62c1d1e, "mmx.20m": 0xd7dba6c9 };
+const MRA_TEXT = "<!--          FPGA arcade hardware by Jotego\n\n              This core is available for hardware compatible with MiST and MiSTer\n              Other FPGA systems may be supported by the time you read this.\n              This work is not mantained by the MiSTer project. Please contact the\n              core author for issues and updates.\n\n              (c) Jose Tejada, 2026. Please support this research\n              Patreon: https://patreon.com/jotego\n\n              The author does not endorse or participate in illegal distribution\n              of copyrighted material. This work can be used with compatible\n              software. This software can be homebrew projects or legally\n              obtained memory dumps of compatible games.\n\n              This file license is GNU GPLv2.\n              You can read the whole license file in\n              https://opensource.org/licenses/gpl-2.0.php\n\n-->\n\n<misterromdescription>\n    <about author=\"jotego\" webpage=\"https://patreon.com/jotego\" twitter=\"@topapate\" source=\"https://jotego/jtcores\"/>\n    <rotation>horizontal</rotation>\n    <name>Mars Matrix Overpowered (26/11/26 Build 6)</name>\n    <setname>mmatrixop</setname>\n    <mameversion>0282</mameversion>\n    <year>2026</year>\n    <manufacturer>Takumi (Capcom license)</manufacturer>\n    <players>2</players>\n    <rbf>jtcps2</rbf>\n    <joystick>8</joystick>\n    <region>World</region>\n    <rom index=\"0\" zip=\"mmatrixop.zip|qsound.zip\" md5=\"None\" address=\"0x30000000\" asm_md5=\"54cabd177d8a461131e37fed6564976d\">\n        <!--  -->\n        <part>\n            00 06 80 06 80 26 80 A6\n            FF FF FF FF FF FF FF FF\n            32 FF 00 02 04 06 26 28\n            2A 2C 2E 00 00 30 02 04\n            08 30 FF FF FF FF FF FF\n            FF FF FF FF </part>\n        <!-- key - starts at 0x0 - length 0x14 (5 bits) -->\n        <part name=\"mmatrixj.key\" crc=\"3b50d889\"/>\n        <!-- maincpu - starts at 0x14 - length 0x180000 (21 bits) -->\n        <part name=\"mmxj.03\" crc=\"7782e303\"/>\n        <part name=\"mmxj.04\" crc=\"d943a339\"/>\n        <part name=\"mmxj.05\" crc=\"36f1ef1c\"/>\n        <!-- audiocpu - starts at 0x180014 - length 0x20000 (17 bits) -->\n        <part name=\"mmx.01\" crc=\"45a29ce5\"/>\n        <!-- qsound - starts at 0x1A0014 - length 0x800000 (23 bits) -->\n        <interleave output=\"16\">\n            <part name=\"mmx.11m\" crc=\"4180b39f\" map=\"12\"/>\n        </interleave>\n        <interleave output=\"16\">\n            <part name=\"mmx.12m\" crc=\"95e22a59\" map=\"12\"/>\n        </interleave>\n        <!-- gfx - starts at 0x9A0014 - length 0x2000000 (25 bits) -->\n        <interleave output=\"64\">\n            <part name=\"mmx.13m\" crc=\"04748718\" map=\"00000021\"/>\n            <part name=\"mmx.15m\" crc=\"38074f44\" map=\"00002100\"/>\n            <part name=\"mmx.17m\" crc=\"e4635e35\" map=\"00210000\"/>\n            <part name=\"mmx.19m\" crc=\"4400a3f2\" map=\"21000000\"/>\n        </interleave>\n        <interleave output=\"64\">\n            <part name=\"mmx.14m\" crc=\"01eb615b\" map=\"00000021\"/>\n            <part name=\"mmx.16m\" crc=\"d976c4eb\" map=\"00002100\"/>\n            <part name=\"mmx.18m\" crc=\"f62c1d1e\" map=\"00210000\"/>\n            <part name=\"mmx.20m\" crc=\"d7dba6c9\" map=\"21000000\"/>\n        </interleave>\n        <!-- firmware - starts at 0x29A0014 - length 0x2000 (13 bits) -->\n        <part name=\"dl-1425.bin\" crc=\"d6cf5ef5\" length=\"0x2000\"/>\n        <!-- Total 0x29A2014 bytes - 42632 kBytes -->\n    </rom>\n    <rom index=\"2\">\n        <part>\n61 43 4D 70 55 4D 41 53 00 00 00 00 00 00 00 00\n00 00 00 01 01 01 02 01 00 03 02 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n</part>\n    </rom>\n    <nvram index=\"2\" size=\"128\"/>\n    <rom index=\"1\">\n        <part>00 80</part>\n    </rom>\n    <switches page_id=\"1\" page_name=\"Switches\" base=\"16\" default=\"ff,ff\">\n        <DSWA/>\n        <DSWB/>\n        <DSWC/>\n    </switches>\n    <buttons names=\"Shot,Rapid Cannon,Rapid Shot,-,-,-,Start,Coin,Core credits\" default=\"A,B,X,Start,Select,-\" count=\"1\"/>\n</misterromdescription>\n";
 
-const PATCHES = [   // generated by patch.py --write-web: [address, old hex, new hex, description]
-  [0x00622D, "20202053414c4553204259204e49484f4e2053595354454d20494e432e20", "2020202020202020204e4f5420464f522053414c45202020202020202020", "title screen: NOT FOR SALE"],
-  [0x009315, "2020544849532047414d4520495320464f522055534520494e202020", "20202020202020202020202020202020202020202020202020202020", "notice: header line blanked"],
-  [0x009332, "202020202020202020202020202020204b4f524541204f4e4c592020", "20202020202020202020202020202020202020202020202020202020", "notice: country line blanked"],
-  [0x00934F, "202020202020202020202020484f4e47204b4f4e47204f4e4c592020", "20202020202020202020202020202020202020202020202020202020", "notice: country line blanked"],
-  [0x00936C, "20202020202020202020202020202054414957414e204f4e4c592020", "20202020202020202020202020202020202020202020202020202020", "notice: country line blanked"],
-  [0x009389, "20202020202020534f555448454153542041534941204f4e4c592020", "20202020202020202020202020202020202020202020202020202020", "notice: country line blanked"],
-  [0x0093A6, "2020202020202020202020202020204555524f5045204f4e4c592020", "20202020202020202020202020202020202020202020202020202020", "notice: country line blanked"],
-  [0x0093C3, "20202020202020202020202020202020552e532e41204f4e4c592020", "20202020202020202020202020202020202020202020202020202020", "notice: country line blanked"],
-  [0x0093E0, "202020202020202020202020202020204a4150414e204f4e4c592020", "20202020202020202020202020202020202020202020202020202020", "notice: country line blanked"],
-  [0x0093FD, "53414c45532c204558504f5254204f52204f5045524154494f4e2020", "544849532050524f4a45435420495320554e4f4646494349414c2020", "notice: body line 1"],
-  [0x00941A, "4f555453494445205448495320434f554e545259204d415920424520", "414e44204953204e4f5420414646494c494154454420574954482c20", "notice: body line 2"],
-  [0x009437, "434f4e53545255454420415320434f5059524947485420414e442020", "454e444f525345442042592c204f5220415554484f52495a45442020", "notice: body line 3"],
-  [0x009454, "54524144454d41524b20494e4652494e47454d454e5420414e442020", "425920434156452e20414c4c2052494748545320544f205448452020", "notice: body line 4"],
-  [0x009471, "4953205354524943544c592050524f484942495445442e2020202020", "4f524947494e414c2047414d4520414e442049545320202020202020", "notice: body line 5"],
-  [0x00948E, "56494f4c41544f5220414e44205355424a45435420544f2020202020", "4153534f43494154454420494e54454c4c45435455414c2020202020", "notice: body line 6"],
-  [0x0094AB, "5345564552452050454e414c5449455320414e442057494c4c202020", "50524f50455254592052454d41494e20574954482054484549522020", "notice: body line 7"],
-  [0x0094C8, "42452050524f5345435554454420544f205448452046554c4c202020", "524553504543544956452052494748545320484f4c444552532e2020", "notice: body line 8"],
-  [0x0094E5, "455854454e54204f4620544845204a414d2e20202020202020202020", "20202020202020202020202020202020202020202020202020202020", "notice: body line 9"],
-  [0x00AE82, "7e02", "7e07", "bomb type: 8 bombs in flight (was 3)"],
-  [0x06CEEC, "527900106c62", "547900106c62", "discomen +2: counter $106C62"],
-  [0x06CEF2, "527900106c3e", "547900106c3e", "discomen +2: counter $106C3E"],
-  [0x06CEF8, "527900106c3c", "547900106c3c", "discomen +2: counter $106C3C"],
-  [0x06CE7C, "527900106c82", "547900106c82", "discomen +2: counter $106C82"],
-  [0x06CE82, "527900106c42", "547900106c42", "discomen +2: counter $106C42"],
-  [0x06CE88, "527900106c40", "547900106c40", "discomen +2: counter $106C40"],
-  [0x06D4BC, "527900106c62", "547900106c62", "discomen +2: counter $106C62"],
-  [0x06D4C2, "527900106c3e", "547900106c3e", "discomen +2: counter $106C3E"],
-  [0x06D4C8, "527900106c3c", "547900106c3c", "discomen +2: counter $106C3C"],
-  [0x06D44C, "527900106c82", "547900106c82", "discomen +2: counter $106C82"],
-  [0x06D452, "527900106c42", "547900106c42", "discomen +2: counter $106C42"],
-  [0x06D458, "527900106c40", "547900106c40", "discomen +2: counter $106C40"],
-  [0x06EAA2, "527900106c62", "547900106c62", "discomen +2: counter $106C62"],
-  [0x06EAA8, "527900106c3e", "547900106c3e", "discomen +2: counter $106C3E"],
-  [0x06EAAE, "527900106c3c", "547900106c3c", "discomen +2: counter $106C3C"],
-  [0x06EB14, "527900106c82", "547900106c82", "discomen +2: counter $106C82"],
-  [0x06EB1A, "527900106c42", "547900106c42", "discomen +2: counter $106C42"],
-  [0x06EB20, "527900106c40", "547900106c40", "discomen +2: counter $106C40"],
-  [0x06EDDE, "527900106c62", "547900106c62", "discomen +2: counter $106C62"],
-  [0x06EDE4, "527900106c3e", "547900106c3e", "discomen +2: counter $106C3E"],
-  [0x06EDEA, "527900106c3c", "547900106c3c", "discomen +2: counter $106C3C"],
-  [0x06EE50, "527900106c82", "547900106c82", "discomen +2: counter $106C82"],
-  [0x06EE56, "527900106c42", "547900106c42", "discomen +2: counter $106C42"],
-  [0x06EE5C, "527900106c40", "547900106c40", "discomen +2: counter $106C40"],
-  [0x06F3DC, "527900106c62", "547900106c62", "discomen +2: counter $106C62"],
-  [0x06F3E2, "527900106c3e", "547900106c3e", "discomen +2: counter $106C3E"],
-  [0x06F3E8, "527900106c3c", "547900106c3c", "discomen +2: counter $106C3C"],
-  [0x06F44E, "527900106c82", "547900106c82", "discomen +2: counter $106C82"],
-  [0x06F454, "527900106c42", "547900106c42", "discomen +2: counter $106C42"],
-  [0x06F45A, "527900106c40", "547900106c40", "discomen +2: counter $106C40"],
-  [0x0016D0, "33fc000100106c3e", "33fc000000106c3e", "discomen start at 0: $106C3E"],
-  [0x0016D8, "33fc000100106c42", "33fc000000106c42", "discomen start at 0: $106C42"],
-  [0x008294, "33fc000100106c3c", "33fc000000106c3c", "discomen start at 0: $106C3C"],
-  [0x00829C, "33fc000100106c40", "33fc000000106c40", "discomen start at 0: $106C40"],
-  [0x0082A4, "33fc000100106c3e", "33fc000000106c3e", "discomen start at 0: $106C3E"],
-  [0x0082AC, "33fc000100106c42", "33fc000000106c42", "discomen start at 0: $106C42"],
-  [0x00869E, "33fc000100106c3c", "33fc000000106c3c", "discomen start at 0: $106C3C"],
-  [0x0086A6, "33fc000100106c3e", "33fc000000106c3e", "discomen start at 0: $106C3E"],
-  [0x0086CE, "33fc000100106c40", "33fc000000106c40", "discomen start at 0: $106C40"],
-  [0x0086D6, "33fc000100106c42", "33fc000000106c42", "discomen start at 0: $106C42"],
-  [0x06D004, "33fc000100106c3c", "33fc000000106c3c", "discomen start at 0: $106C3C"],
-  [0x06D00C, "33fc000100106c40", "33fc000000106c40", "discomen start at 0: $106C40"],
-  [0x06D0FE, "33fc000100106c3c", "33fc000000106c3c", "discomen start at 0: $106C3C"],
-  [0x06D106, "33fc000100106c40", "33fc000000106c40", "discomen start at 0: $106C40"],
-  [0x06D17E, "33fc000100106c3c", "33fc000000106c3c", "discomen start at 0: $106C3C"],
-  [0x06D186, "33fc000100106c40", "33fc000000106c40", "discomen start at 0: $106C40"],
-  [0x06D1FC, "33fc000100106c3c", "33fc000000106c3c", "discomen start at 0: $106C3C"],
-  [0x06D204, "33fc000100106c40", "33fc000000106c40", "discomen start at 0: $106C40"],
-  [0x06D320, "33fc000100106c3c", "33fc000000106c3c", "discomen start at 0: $106C3C"],
-  [0x06D328, "33fc000100106c40", "33fc000000106c40", "discomen start at 0: $106C40"],
-  [0x06D676, "33fc000100106c3c", "33fc000000106c3c", "discomen start at 0: $106C3C"],
-  [0x06D67E, "33fc000100106c40", "33fc000000106c40", "discomen start at 0: $106C40"],
-  [0x00395E, "7001", "7000", "discomen start at 0: all six counters"],
-  [0x09E5C0, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "382d0024895648e7fffe10390010b40202000003660870004eb90006ccde4cdf7fff4e75", "bomb hits drop discomen (hook)"],
-  [0x009DE0, "382d00248956", "4eb90009e5c0", "bomb hits drop discomen: blast routine"],
-  [0x009E92, "382d00248956", "4eb90009e5c0", "bomb hits drop discomen: blast routine"],
-  [0x009F16, "382d00248956", "4eb90009e5c0", "bomb hits drop discomen: blast routine"],
-  [0x06CEA6, "0c7903e800106c40", "0c79271000106c40", "value cap 9999: compare $106C40"],
-  [0x06CEB0, "33fc03e700106c40", "33fc270f00106c40", "value cap 9999: clamp $106C40"],
-  [0x06CF16, "0c7903e800106c3c", "0c79271000106c3c", "value cap 9999: compare $106C3C"],
-  [0x06CF20, "33fc03e700106c3c", "33fc270f00106c3c", "value cap 9999: clamp $106C3C"],
-  [0x06D476, "0c7903e800106c40", "0c79271000106c40", "value cap 9999: compare $106C40"],
-  [0x06D480, "33fc03e700106c40", "33fc270f00106c40", "value cap 9999: clamp $106C40"],
-  [0x06D4E6, "0c7903e800106c3c", "0c79271000106c3c", "value cap 9999: compare $106C3C"],
-  [0x06D4F0, "33fc03e700106c3c", "33fc270f00106c3c", "value cap 9999: clamp $106C3C"],
-  [0x06EACC, "0c7903e800106c3c", "0c79271000106c3c", "value cap 9999: compare $106C3C"],
-  [0x06EAD6, "33fc03e700106c3c", "33fc270f00106c3c", "value cap 9999: clamp $106C3C"],
-  [0x06EB3E, "0c7903e800106c40", "0c79271000106c40", "value cap 9999: compare $106C40"],
-  [0x06EB48, "33fc03e700106c40", "33fc270f00106c40", "value cap 9999: clamp $106C40"],
-  [0x06EE08, "0c7903e800106c3c", "0c79271000106c3c", "value cap 9999: compare $106C3C"],
-  [0x06EE12, "33fc03e700106c3c", "33fc270f00106c3c", "value cap 9999: clamp $106C3C"],
-  [0x06EE7A, "0c7903e800106c40", "0c79271000106c40", "value cap 9999: compare $106C40"],
-  [0x06EE84, "33fc03e700106c40", "33fc270f00106c40", "value cap 9999: clamp $106C40"],
-  [0x06F406, "0c7903e800106c3c", "0c79271000106c3c", "value cap 9999: compare $106C3C"],
-  [0x06F410, "33fc03e700106c3c", "33fc270f00106c3c", "value cap 9999: clamp $106C3C"],
-  [0x06F478, "0c7903e800106c40", "0c79271000106c40", "value cap 9999: compare $106C40"],
-  [0x06F482, "33fc03e700106c40", "33fc270f00106c40", "value cap 9999: clamp $106C40"],
-  [0x09E600, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "2f0841f90006fdba2c3c010000003c3010004846357c0180001c357c0200001e342a000202420fff6728342a0002024200ff66323406e24adc4248463406e24adc424846357c0240001c357c0300001e6014dc464846dc464846357c0300001c357c0400001e205f4e75", "big popups 1.5x/2x (hook)"],
-  [0x06FE2C, "2c3c010000003c3b10864846", "4eb90009e6004e714e714e71", "big popups: zoom setup"],
-  [0x06FE62, "04440200", "986a001e", "big popups: spacing after '+'"],
-  [0x06FEB6, "04440180", "986a001c", "big popups: spacing between digits"],
-  [0x06FEC8, "04440180", "986a001c", "big popups: spacing between digits"],
-  [0x06FF08, "04440180", "986a001c", "big popups: spacing between digits"],
-  [0x09E680, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "48e780e02e3900103de843f900103fae601048e780e02e3900103dec43f900103fce23c70010b4083039001052d8601841f90010b40c45e90004023c00efc10ac10ac10ac10a5889534064e42e390010b4084cdf07014e75", "score box shows the running total (hook)"],
-  [0x064948, "2e3900103de8", "4eb90009e680", "score box: P1 running total"],
-  [0x064984, "2e3900103dec", "4eb90009e692", "score box: P2 running total"],
-  [0x09E6E0, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "2f074eb90009e68020072e1f2f0042390010b49002800f000000670813fc00010010b49020170280f0000000670813fc00020010b490201f4e754a390010b490671e48a7980006440200611e0c3900020010b490660606440200610e4c9f0019343c099b3a3c02024e7548a7980030390010518a0c4006006504303c06009840d6402f082079001015963083314400023141000431420006217c0100010000083145000c41e8001023c800101596205f4c9f00194e753a3c020106440a004a390010b4906712064402000c3900020010b4906604064402004e75", "score box: P1 hooks"],
-  [0x09E7CA, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "2f074eb90009e69220072e1f2f0042390010b49102800f000000670813fc00010010b49120170280f0000000670813fc00020010b491201f4e754a390010b491671e48a7980004440200611e0c3900020010b491660604440200610e4c9f0019343c099b3a3c02024e7548a7980030390010518a0c4006006504303c06009840d6402f082079001015963083314400023141000431420006217c0100010000083145000c41e8001023c800101596205f4c9f00194e753a3c0201044406004a390010b4916712044402000c3900020010b4916604044402004e754eb90009e7ca4a390010b4916712044402000c3900020010b4916604044402004e75", "score box: P2 hooks"],
-  [0x063D24, "203900103de8", "4eb90009e6e0", "score box: P1 size by running total"],
-  [0x063DA8, "343c099b3a3c0202", "4eb90009e71a4e71", "score box: P1 extra middle pieces"],
-  [0x063E0A, "3a3c020106440a00", "4eb90009e7964e71", "score box: P1 right end"],
-  [0x0640E6, "203900103dec", "4eb90009e7ca", "score box: P2 size by running total"],
-  [0x064162, "343c099b3a3c0202", "4eb90009e8044e71", "score box: P2 extra middle pieces"],
-  [0x0641BC, "3a3c020104440600", "4eb90009e8804e71", "score box: P2 right end"],
-  [0x09E8D6, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "34070242f0006714e95a70013206064202584eb900064c7c064402003407e04a0242000f4e75", "score digits: 8th digit (hook)"],
-  [0x064BBE, "3407e04a0242000f", "4eb90009e8d64e71", "score digits: draw the 8th digit"],
-  [0x064A04, "02420fff", "0242ffff", "score digits: include the 8th digit"],
-  [0x064A10, "02420ff0", "0242fff0", "score digits: include the 8th digit"],
-  [0x064A16, "02420f00", "0242ff00", "score digits: 7/8-digit path"],
-  [0x064C92, "217c010000e00008", "217c010001000008", "score digits: 7-digit path full width"],
-  [0x0649A6, "203900103dec", "4eb90009e8a4", "score digits: P2 start per box size"],
-  [0x064BD4, "064401c0", "06440200", "score digits: 7-digit path normal spacing"],
-  [0x064BEE, "064401c0", "06440200", "score digits: 7-digit path normal spacing"],
-  [0x064C06, "064401c0", "06440200", "score digits: 7-digit path normal spacing"],
-  [0x064C26, "064401c0", "06440200", "score digits: 7-digit path normal spacing"],
-  [0x064C46, "064401c0", "06440200", "score digits: 7-digit path normal spacing"],
-  [0x064C66, "064401c0", "06440200", "score digits: 7-digit path normal spacing"],
-  [0x0644E4, "343c0fe9", "343c0feb", "remove STAGE: first tile"],
-  [0x0644EC, "383c0ec0", "383c16c0", "remove STAGE: position"],
-  [0x064502, "3a3c0104", "3a3c0102", "remove STAGE: width"],
-  [0x09E90C, "ffffffffffffffffffffffffffffffff", "007900010010511242b90010510c4e75", "1UP every 1000 discomen (hook)"],
-  [0x06D42C, "0cb9000007d00010510c", "0cb9000003e80010510c", "1UP every 1000 discomen: threshold"],
-  [0x06D438, "0079000100105112", "4eb90009e90c4e71", "1UP every 1000 discomen: repeat"],
-  [0x09E92C, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "52b90010510c48e7e0e020390010510c80fc006448404a40660e7003243c540024004eb90006e5c04cdf07074e75", "bomb item every 250 discomen (hook)"],
-  [0x06D426, "52b90010510c", "4eb90009e92c", "bomb item every 250 discomen: pickup count"],
-  [0x09E96A, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "48e7fffe41f90009e99a323c3a30363c2400383c13004eb90000650e4cdf7fff083900020010161d4e754e714e714e71444953434f2046455645520000", "title: DISCO FEVER (hook + text)"],
-  [0x004FF2, "083900020010161d", "4eb90009e96a4e71", "title: draw DISCO FEVER (no credit)"],
-  [0x0060E8, "083900020010161d", "4eb90009e96a4e71", "title: draw DISCO FEVER (credit)"],
-  [0x00503C, "363c2200", "363c1e00", "title: PLEASE INSERT COIN lower"],
-  [0x0063B0, "337c22000000", "337c1e000000", "title: PRESS START lower"],
-  [0x09E440, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "bbfc0010d3b2663448e7fffe200e0480001075f26522ea880c8000000078641841f90010b4104a300000660c50f0000070004eb90006ccde4cdf7fff2f0d2f004bf90010673a4ef90000a43c", "bomb kills drop a discoman (hook)"],
-  [0x00A432, "2f0d2f004bf90010673a", "4ef90009e4404e714e71", "bomb kills drop a discoman: enemy-kill entry"],
-  [0x09E4C0, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "48e7fffe4a390010e722673233fc005a0010b40052390010b40247f9001085727e454a536a0e242b000670004eb90006cd0e425347eb004051cfffe8601c41f90010b4107e1d429851cffffc4a790010b400674a53790010b40022790010d3c22009673a4ca90030000645f90010c5f27e314a526a20082a0007000166183004906a00066124d16a00063005906a00086118d16a000845ea002051cfffd64cdf7fff4df90010c5f24e750c4004006f04303c04000c40fc006c04303cfc004e75", "bomb: bullets -> discomen, pull discomen (hook)"],
-  [0x06CE08, "4df90010c5f2", "4eb90009e4c0", "bomb: per-frame hook in the discoman update loop"],
-  [0x06DA42, "6a08", "6008", "bomb: allow discomen to spawn during a bomb"],
-  [0x09E400, "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", "4a2d0007660a083900040010161560080839000400101617670e102e003990390000bfcc912e001a4ef9000788f2", "hold button 1: slowest speed (hook)"],
-  [0x00A9A2, "4eb9000788f2", "4eb90009e400", "hold button 1: player move calls the hook"],
-];
-
-const CRC_TABLE = (() => {
-  const t = new Uint32Array(256);
-  for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
-  return t;
-})();
+const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
 function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
 const hex8 = (n) => (n >>> 0).toString(16).padStart(8, "0");
-async function sha1(u8) { const h = new Uint8Array(await crypto.subtle.digest("SHA-1", u8)); return Array.from(h, (b) => b.toString(16).padStart(2, "0")).join(""); }
 const fromHex = (s) => Uint8Array.from(s.match(/../g) || [], (h) => parseInt(h, 16));
 
-// Same as apply_patches() in patch.py: u34 = even (high) bytes, u33 = odd (low) bytes.
-const toHex = (s) => Array.from(s, (c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("");
-const laneSum = (p, lane) => { let s = 0; for (let i = lane; i < p.length; i += 2) s += p[i]; return s & 0xFFFF; };
-// The YY/MM/DD date in the MRA <name> (same as mra_date() in patch.py).
-function mraDate(mra) {
-  const m = /<name>[^<]*?(\d\d\/\d\d\/\d\d)[^<]*<\/name>/.exec(mra);
-  if (!m) throw new Error("no YY/MM/DD date found in the MRA <name>");
-  return m[1];
-}
-// Footer "98/09/17 VER." -> "<date> BUILD <n>", right-aligned (same as footer_patch() in patch.py).
-function footerPatch(date, build) {
-  const [addr, old] = FOOTER, text = `${date} BUILD ${build} `;
-  if (text.length > old.length) throw new Error("footer text too long");
-  return [addr, toHex(old), toHex(text.padStart(old.length)), "notice: footer date and build"];
-}
-function applyPatches(u33, u34, date = mraDate(MRA_TEMPLATE), build = BUILD) {
-  const prog = new Uint8Array(u33.length * 2);
-  for (let i = 0; i < u33.length; i++) { prog[2 * i] = u34[i]; prog[2 * i + 1] = u33[i]; }
-  const sums = [laneSum(prog, 0), laneSum(prog, 1)];
-  for (const [addr, oldH, newH, desc] of [...PATCHES, footerPatch(date, build)]) {
-    const o = fromHex(oldH), n = fromHex(newH);
-    if (o.length !== n.length) throw new Error(`${addr.toString(16)} (${desc}): old and new lengths differ`);
-    for (let k = 0; k < o.length; k++) if (prog[addr + k] !== o[k]) throw new Error(`${addr.toString(16)} (${desc}): original bytes not found; is this the right dump?`);
-    prog.set(n, addr);
-  }
-  // keep the boot ROM-check sums (same as apply_patches() in patch.py)
-  const [lo, hi] = CHECKSUM_FILL;
-  for (let i = lo; i < hi; i++) if (prog[i] !== 0xFF) throw new Error("checksum fill area is not empty");
-  for (const lane of [0, 1]) {
-    let need = (laneSum(prog, lane) - sums[lane]) & 0xFFFF;
-    for (let i = lo + lane; i < hi && need; i += 2) { const t = Math.min(need, 0xFF); prog[i] = 0xFF - t; need -= t; }
-    if (need) throw new Error("checksum fill area too small");
-  }
-  if (laneSum(prog, 0) !== sums[0] || laneSum(prog, 1) !== sums[1]) throw new Error("ROM-check sums not kept");
-  const a = new Uint8Array(u33.length), b = new Uint8Array(u34.length);
-  for (let i = 0; i < a.length; i++) { a[i] = prog[2 * i + 1]; b[i] = prog[2 * i]; }
-  return { "cv01-u33.bin": a, "cv01-u34.bin": b };
-}
-</script>
-<script>
 (() => {
   const $ = (id) => document.getElementById(id);
-  const fmtSize = (n) => n >= 1048576 ? (n / 1048576).toFixed(n % 1048576 ? 1 : 0) + " MB" : n.toLocaleString() + " B";
-  const state = { entries: {}, zipBuf: null, inputs: null, result: null, canRomset: false };
+  const fmtSize = (n) => n >= 1048576 ? (n / 1048576) + " MB" : n.toLocaleString() + " B";
+  const state = { data: null, result: null };
+  $("build-no").textContent = BUILD;
   // ---------- zip reading ----------
   function readZipDir(buf) {
     const u8 = new Uint8Array(buf), dv = new DataView(buf);
@@ -448,126 +247,67 @@ function applyPatches(u33, u34, date = mraDate(MRA_TEMPLATE), build = BUILD) {
   }
 
   // ---------- step 2: checking ----------
-  const escapeHtml = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
   function msg(el, cls, text) { el.className = "notice" + (cls ? " " + cls : ""); el.textContent = text; el.hidden = false; }
-  function renderCheck(rows) {
-    $("check-body").innerHTML = "";
-    for (const [name, [size, crc]] of Object.entries(FILES)) {
-      const r = rows ? rows[name] : null;
-      let found = "&mdash;", pill = '<span class="pill">Waiting</span>';
-      if (rows) {
-        if (!r) pill = PATCHED.includes(name) ? '<span class="pill bad">Missing</span>' : '<span class="pill warn">Not in input</span>';
-        else {
-          const ok = r.crc === crc && r.size === size;
-          found = `<span class="${ok ? "" : "mismatch"}">${r.crc}</span>`;
-          pill = r.size !== size ? `<span class="pill bad">Wrong size (${fmtSize(r.size)})</span>` : !ok ? '<span class="pill bad">Wrong CRC</span>'
-            : `<span class="pill ok">${r.verified ? "OK, data verified" : "OK"}</span>`;
-          if (r.renamedFrom) pill += `<span class="role">found as ${escapeHtml(r.renamedFrom)}</span>`;
-        }
-      }
-      const role = PATCHED.includes(name) ? "Patched" : "Copied unchanged";
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td class="mono">${name}<span class="role">${role}</span></td><td class="mono">${fmtSize(size)}</td><td class="mono">${crc}</td><td class="mono">${found}</td><td>${pill}</td>`;
-      $("check-body").appendChild(tr);
-    }
-  }
-  function pickEntries(list) {   // by file name first (any folder), then by CRC for renamed files
-    const out = {};
-    for (const e of list) { const n = e.name.toLowerCase(); if (n in FILES && !out[n]) out[n] = e; }
-    for (const e of list) for (const [n, [size, crc]] of Object.entries(FILES))
-      if (!out[n] && e.crc === parseInt(crc, 16) && e.size === size) { out[n] = e; e.renamedFrom = e.path; }
-    return out;
-  }
-
-  async function loadFiles(files) {
-    resetOutput();
-    state.inputs = null; state.zipBuf = null; state.entries = {};
-    $("build-row").hidden = true;
-    files = Array.from(files);
-    if (!files.length) return;
-    $("src").hidden = false; $("src").textContent = files.map((f) => f.name).join(", ");
-    msg($("check-msg"), "", "Reading…");
-    try {
-      let list;
-      const isZip = files.length === 1 && (/\.zip$/i.test(files[0].name) ||
-        new Uint32Array((await files[0].slice(0, 4).arrayBuffer()).slice(0))[0] === 0x04034b50);
-      if (isZip) { state.zipBuf = await files[0].arrayBuffer(); list = readZipDir(state.zipBuf); }
-      else {
-        const sizes = new Set(Object.values(FILES).map((f) => f[0]));
-        list = [];
-        for (const f of files) {
-          if (!sizes.has(f.size)) continue;
-          const data = new Uint8Array(await f.arrayBuffer());
-          list.push({ name: f.name, path: f.name, size: f.size, crc: crc32(data), data });
-        }
-      }
-      const picked = pickEntries(list), rows = {};
-      for (const [n, e] of Object.entries(picked)) rows[n] = { crc: hex8(e.crc), size: e.size, renamedFrom: e.renamedFrom && e.renamedFrom !== n ? e.renamedFrom : null };
-      state.entries = picked;
-      renderCheck(rows);
-
-      const bad = PATCHED.filter((n) => !rows[n] || rows[n].crc !== FILES[n][1] || rows[n].size !== FILES[n][0]);
-      if (bad.length) {
-        const missing = bad.filter((n) => !rows[n]);
-        msg($("check-msg"), "bad", missing.length
-          ? `${missing.join(" and ")} ${missing.length > 1 ? "were" : "was"} not found. Load the dfeveron (or feversos) romset.`
-          : `${bad.join(" and ")} ${bad.length > 1 ? "don't" : "doesn't"} match the expected CRC32. This dump can't be patched.`);
-        return;
-      }
-      // read every file and verify the real data, not just the zip header
-      const inputs = {};
-      for (const [n, e] of Object.entries(picked)) {
-        const data = e.data || await zipEntryData(state.zipBuf, e);
-        if (hex8(crc32(data)) !== FILES[n][1] || await sha1(data) !== FILES[n][2]) {
-          rows[n].crc = hex8(crc32(data)); renderCheck(rows);
-          if (PATCHED.includes(n)) { msg($("check-msg"), "bad", `${n} is damaged: its data doesn't match the CRC32 or SHA-1.`); return; }
-          continue;
-        }
-        rows[n].verified = true; inputs[n] = data;
-      }
-      renderCheck(rows);
-      state.inputs = inputs;
-      const missing = Object.keys(FILES).filter((n) => !inputs[n]);
-      state.canRomset = missing.length === 0;
-      if (missing.length) msg($("check-msg"), "warn", `The program ROMs are correct, so they will be patched. Missing or wrong: ${missing.join(", ")}. The complete romset needs them; the program-only download still works.`);
-      else msg($("check-msg"), "ok", "All eight files match.");
-      await build();
-    } catch (err) { msg($("check-msg"), "bad", err.message || String(err)); }
-  }
-
-  // ---------- step 3: build ----------
-  async function build() {
-    resetOutput();
-    $("build-row").hidden = false;
-    try {
-      const res = applyPatches(state.inputs["cv01-u33.bin"], state.inputs["cv01-u34.bin"]);
-      $("out-body").innerHTML = "";
-      for (const n of PATCHED) {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td class="mono">${OUT_NAMES[n]}</td><td class="mono">${hex8(crc32(res[n]))}</td><td class="sha">${await sha1(res[n])}</td><td><span class="pill ok">Build ${BUILD}</span></td>`;
-        $("out-body").appendChild(tr);
-      }
-      state.result = res;
-      if (!PATCHES.length) msg($("out-notes"), "warn", "This build has no gameplay changes yet, so the files are identical to your originals.");
-      $("build-status").textContent = `Build ${BUILD}: ${PATCHES.length + 1} patches applied (footer ${mraDate(MRA_TEMPLATE)} BUILD ${BUILD}), ROM-check sums kept.`;
-      $("dl-romset").disabled = !state.canRomset;
-      $("dl-romset").title = state.canRomset ? "" : "Needs all eight dfeveron files with the correct CRC32";
-      $("dl-mra").disabled = false;
-    } catch (err) { $("build-status").textContent = ""; msg($("out-notes"), "bad", err.message || String(err)); }
+  function renderCheck(found) {
+    $("check-body").innerHTML = Object.entries(FILES).map(([n, [, size, crc]]) => {
+      const f = found && found[n];
+      const st = !found ? '<span class="pill">Waiting</span>' : !f ? '<span class="pill bad">Missing</span>' : f.crc === crc ? '<span class="pill ok">OK</span>' : '<span class="pill bad">Wrong CRC</span>';
+      const fc = f ? `<span class="${f.crc === crc ? "" : "mismatch"}">${hex8(f.crc)}</span>` : "—";
+      return `<tr><td class="mono">${n}</td><td class="mono">${fmtSize(size)}</td><td class="mono">${hex8(crc)}</td><td class="mono">${fc}</td><td>${st}</td></tr>`;
+    }).join("");
   }
   function resetOutput() {
     state.result = null;
-    $("out-body").innerHTML = PATCHED.map((n) => `<tr><td class="mono">${OUT_NAMES[n]}</td><td class="mono">&mdash;</td><td class="sha">&mdash;</td><td><span class="pill">Waiting</span></td></tr>`).join("");
-    ["dl-romset", "dl-mra"].forEach((id) => $(id).disabled = true);
-    $("out-notes").hidden = true;
+    $("out-body").innerHTML = Object.keys(PATCHES).map((n) => `<tr><td class="mono">${n}</td><td class="mono">—</td><td><span class="pill">Waiting</span></td></tr>`).join("");
+    $("dl-romset").disabled = $("dl-mra").disabled = true; $("out-notes").hidden = true;
   }
 
-  // ---------- downloads ----------
-  async function zipItems(names) {
+  async function loadFiles(files) {
+    resetOutput(); renderCheck(null);
+    const file = files && files[0]; if (!file) return;
+    $("src").textContent = file.name; $("src").hidden = false;
+    try {
+      const buf = await file.arrayBuffer();
+      const list = readZipDir(buf);
+      const found = {};   // match by file name in any folder, preferring the entry with the right CRC
+      for (const [n, [inner, , crc]] of Object.entries(FILES)) {
+        const c = list.filter((e) => e.name.toLowerCase() === inner);
+        const e = c.find((x) => x.crc === crc) || c[0];
+        if (e) found[n] = e;
+      }
+      renderCheck(found);
+      const bad = Object.entries(FILES).filter(([n, [, , crc]]) => !found[n] || found[n].crc !== crc).map(([n]) => n);
+      if (bad.length) return msg($("check-msg"), "bad", `This isn't a matching mmatrix.zip. Missing or wrong: ${bad.join(", ")}. Nothing was patched.`);
+      msg($("check-msg"), "ok", "All 15 files match. Building the patched romset…");
+      const data = {};
+      for (const n of Object.keys(FILES)) {
+        data[n] = await zipEntryData(buf, found[n]);
+        if (crc32(data[n]) !== FILES[n][2]) throw new Error(`${n} is damaged inside the zip (CRC doesn't match after unpacking).`);
+      }
+      state.data = data; build();
+      msg($("check-msg"), "ok", "All 15 files match.");
+    } catch (err) { msg($("check-msg"), "bad", err.message || String(err)); }
+  }
+
+  function build() {
+    const res = {};
+    for (const [n, list] of Object.entries(PATCHES)) {
+      const out = state.data[n].slice();
+      for (const [off, hex] of list) out.set(fromHex(hex), off);
+      if (crc32(out) !== PATCHED_CRC[n]) throw new Error(`Patching ${n} gave an unexpected CRC. Nothing was written.`);
+      res[n] = out;
+    }
+    state.result = res;
+    $("out-body").innerHTML = Object.keys(PATCHES).map((n) => `<tr><td class="mono">${n}</td><td class="mono">${hex8(PATCHED_CRC[n])}</td><td><span class="pill ok">Build ${BUILD}</span></td></tr>`).join("");
+    $("dl-romset").disabled = $("dl-mra").disabled = false;
+  }
+
+  async function zipItems() {
     const items = [];
-    for (const n of names) {
-      const data = state.result[n] || state.inputs[n];
-      items.push({ name: OUT_NAMES[n] || n, method: 8, crc: crc32(data), size: data.length, data: await deflateRaw(data) });
+    for (const n of Object.keys(FILES)) {
+      const d = state.result[n] || state.data[n];
+      items.push({ name: n, method: 8, crc: crc32(d), size: d.length, data: await deflateRaw(d) });
     }
     return items;
   }
@@ -589,25 +329,12 @@ function applyPatches(u33, u34, date = mraDate(MRA_TEMPLATE), build = BUILD) {
     } finally { btn.textContent = old; btn.disabled = false; }
   }
   $("dl-romset").addEventListener("click", async (ev) => {
-    const btn = ev.currentTarget;   // read before any await: the browser clears currentTarget afterwards
-    try { await save(ZIP_NAME, writeZip(await zipItems(Object.keys(FILES))), btn); }
+    const btn = ev.currentTarget;
+    try { await save(ZIP_NAME, writeZip(await zipItems()), btn); }
     catch (err) { msg($("out-notes"), "bad", "The romset couldn't be built: " + (err.message || err)); }
   });
+  $("dl-mra").addEventListener("click", (ev) => save(MRA_NAME, new Blob([MRA_TEXT], { type: "application/xml" }), ev.currentTarget));
 
-  // MiSTer MRA: mister/Dangun Feveron Disco Fever.mra with the program parts pointed at the patched names and CRCs
-  // (same as mra_with_crcs() in patch.py)
-  function mraText() {
-    let mra = MRA_TEMPLATE;
-    for (const n of PATCHED) {
-      const re = new RegExp(`<part name="${n.slice(0, -4)}(?:fever)?\\.bin" crc="[0-9a-fA-F]{8}"`);
-      mra = mra.replace(re, `<part name="${OUT_NAMES[n]}" crc="${hex8(crc32(state.result[n]))}"`);
-    }
-    // build number in the <name> (same as mra_with_build() in patch.py)
-    return mra.replace(/(<name>[^<]*?\bBuild)(?: \d+)?/, `$1 ${BUILD}`);
-  }
-  $("dl-mra").addEventListener("click", (ev) => save(MRA_NAME, new Blob([mraText()], { type: "application/xml" }), ev.currentTarget));
-
-  // ---------- file input ----------
   const drop = $("drop");
   $("file").addEventListener("change", (e) => loadFiles(e.target.files));
   ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
@@ -615,8 +342,7 @@ function applyPatches(u33, u34, date = mraDate(MRA_TEMPLATE), build = BUILD) {
   drop.addEventListener("drop", (e) => loadFiles(e.dataTransfer.files));
   if (typeof DecompressionStream === "undefined" || typeof CompressionStream === "undefined")
     msg($("check-msg"), "bad", "This browser is too old to read zip files here. Use a current version of Chrome, Edge, Firefox or Safari.");
-  renderCheck(null);
-  resetOutput();
+  renderCheck(null); resetOutput();
 })();
 </script>
 </body></html>

@@ -22,10 +22,10 @@
 <misterromdescription>
     <about author="jotego" webpage="https://patreon.com/jotego" twitter="@topapate" source="https://jotego/jtcores"/>
     <rotation>horizontal</rotation>
-    <name>Mars Matrix: Hyper Solid Shooting (Japan 000412)</name>
+    <name>Mars Matrix Overpowered (26/11/26 Build 6)</name>
     <setname>mmatrixop</setname>
     <mameversion>0282</mameversion>
-    <year>2000</year>
+    <year>2026</year>
     <manufacturer>Takumi (Capcom license)</manufacturer>
     <players>2</players>
     <rbf>jtcps2</rbf>
@@ -43,11 +43,11 @@
         <!-- key - starts at 0x0 - length 0x14 (5 bits) -->
         <part name="mmatrixj.key" crc="3b50d889"/>
         <!-- maincpu - starts at 0x14 - length 0x180000 (21 bits) -->
-        <part name="mmxj.03" crc="03fa7922"/>
+        <part name="mmxj.03" crc="7782e303"/>
         <part name="mmxj.04" crc="d943a339"/>
-        <part name="mmxj.05" crc="a4ce4650"/>
+        <part name="mmxj.05" crc="36f1ef1c"/>
         <!-- audiocpu - starts at 0x180014 - length 0x20000 (17 bits) -->
-        <part name="mmx.01" crc="36474978"/>
+        <part name="mmx.01" crc="45a29ce5"/>
         <!-- qsound - starts at 0x1A0014 - length 0x800000 (23 bits) -->
         <interleave output="16">
             <part name="mmx.11m" crc="4180b39f" map="12"/>
@@ -63,10 +63,10 @@
             <part name="mmx.19m" crc="4400a3f2" map="21000000"/>
         </interleave>
         <interleave output="64">
-            <part name="mmx.14m" crc="d52bf491" map="00000021"/>
-            <part name="mmx.16m" crc="23f70780" map="00002100"/>
-            <part name="mmx.18m" crc="2562c9d5" map="00210000"/>
-            <part name="mmx.20m" crc="583a9687" map="21000000"/>
+            <part name="mmx.14m" crc="01eb615b" map="00000021"/>
+            <part name="mmx.16m" crc="d976c4eb" map="00002100"/>
+            <part name="mmx.18m" crc="f62c1d1e" map="00210000"/>
+            <part name="mmx.20m" crc="d7dba6c9" map="21000000"/>
         </interleave>
         <!-- firmware - starts at 0x29A0014 - length 0x2000 (13 bits) -->
         <part name="dl-1425.bin" crc="d6cf5ef5" length="0x2000"/>

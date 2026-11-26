@@ -7,7 +7,7 @@ Windows tools. It does NOT apply the tiny .xdelta3 files (which are not used
 by this source-build workflow).
 
 Usage:
-  py patch.py mmatrix.zip mmxi_v1.0.0_20250412.zip
+  py trap15.py mmatrix.zip mmxi_v1.0.0_20250412.zip
 
 Output:
   mmatrixj_trap15_v1.0.0_patched.zip

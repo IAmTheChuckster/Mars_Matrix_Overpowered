@@ -9,15 +9,42 @@ While Claude was used I put effort in making sure there are balanced gameplay.<b
 I did all the testing and planning.
 
 ## Change Notes
+
+### Build 6 (26/11/26)
+- Fixed bullet cancelling: only enemy bullets on screen are turned into gold cubes. Build 4 hooked the wrong list (player shots / effects), which made walls of cubes and left enemy bullets alone.
+
+### Build 5 (26/11/26)
+- Mosquito 01 (red ship) now has Mosquito 02's (blue ship) top speed.
+- The ship select screen shows 5 MAX SPEED boxes for Mosquito 01.
+
+### Build 4 (26/11/26)
+- Bullet cancelling: killing an enemy turns every enemy bullet within 24px of it into a gold cube. Any bullet within 16px of a cancelled bullet is cancelled too, so the cancel chains outward through dense bullet patterns.
+
+### Build 3 (26/11/26)
+- Chain bar (the "+N" counter under EXP) drains twice as slowly.
+- GHB bar refills twice as fast.
+- GHB can be used at any time, even while it's still filling (it needs at least 1/16 of the bar).
+
+### Build 2 (26/11/26)
+- Warning screen now reads MARS MATRIX OVERPOWERED, the build date and the build number.
+
+### Build 1
+- Base build: Mars Matrix Improvement patch v1.0.0 applied, no Overpowered gameplay changes yet.
+
 This patch also includes the Mars Matrix Improvement patch by Alex "trap15" Marshall which was released on the 25th anniversary.<br> 
 Source code: http://bitbucket.org/trap15/mmatrix_unfuck/
 
 ## Patching the game
 
 ### Web Patcher
-Open the **[Web Patcher](https://iamthechuckster.github.io/Mars_Matrix_Overpowered/)** (`index.html`) and drop in your `mmatrix.zip`. It checks the file names and CRCs, builds the patched files automatically, and lets you download the complete `mmatrix.zip` romset. Everything runs in your browser; nothing is uploaded.
+Open the **[Web Patcher](https://iamthechuckster.github.io/Mars_Matrix_Overpowered/)** (`index.html`) and drop in your `mmatrix.zip`. It checks the file names and CRCs, builds the patched files automatically, and lets you download the patched `mmatrixop.zip` romset and the MiSTer `.mra`. Everything runs in your browser; nothing is uploaded.
 
 ### With Python
+Requires Windows (trap15's bundled build tools are .exe files).
+```
+py overpowered.py mmatrix.zip patches/mmxi_v1.0.0_20250412.zip
+```
+This writes `mmatrixop.zip`. It runs `trap15.py` (the trap15 Improvement build) first, then applies the Overpowered tweaks.
 
 ## Testing
 This patch was tested with MAME 0.289<br>
