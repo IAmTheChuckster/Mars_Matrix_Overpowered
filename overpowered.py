@@ -348,6 +348,19 @@ def sfx_centered(roms: dict, code: CodePatcher) -> None:
     z80[start:end] = bytes_at(start, end)
 
 
+def title_overpowered(roms: dict, code: CodePatcher) -> None:
+    """"OVERPOWERED" under the title logo (source: asm/title_text.asm)."""
+    syms, bytes_at = code.assemble(ASM_DIR / "title_text.asm")
+    hook, hook_end = syms["tt_hook"], syms["tt_hook_end"]
+    code.patch(hook, "3f3c001f4eb900152228", bytes_at(hook, hook_end).hex())
+    start, end = syms["tt_title_text"], syms["tt_code_end"]
+    code.place(roms, start, bytes_at(start, end + end % 2))
+    s, e = syms["tt_string"], syms["tt_string_end"]
+    if any(read_bytes(roms, s, e - s)):
+        raise RuntimeError(f"ROM space at {s:#x} is not free")
+    write_bytes(roms, s, bytes_at(s, e))          # data: stays unencrypted
+
+
 def apply_tweaks(roms: dict, code: "CodePatcher", date: str, build: int) -> None:
     warning_screen(roms, date, build)
     chain_bar_half_drain(roms)
@@ -356,6 +369,7 @@ def apply_tweaks(roms: dict, code: "CodePatcher", date: str, build: int) -> None
     red_ship_speed(roms, code)
     qsound_plain_stereo(roms)
     sfx_centered(roms, code)
+    title_overpowered(roms, code)
     code.commit(roms)
 
 

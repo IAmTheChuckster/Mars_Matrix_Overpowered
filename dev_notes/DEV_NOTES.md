@@ -191,6 +191,22 @@ Implementation (`asm/bullet_cancel.asm`, `bullet_cancel()` in `overpowered.py`):
 
 - Patched CRCs: `mmx.01` a39b5635, `mmxj.03` 7782e303, `mmxj.05` a80db00d (build number), `mmx.14m` 01eb615b, `mmx.16m` d976c4eb, `mmx.18m` f62c1d1e, `mmx.20m` d7dba6c9. The web data reproduces all 7.
 
+### Build 9 (27/11/27)
+
+**Title screen text "OVERPOWERED"** under the logo, in the empty band above the copyright lines.
+
+Findings:
+- The title's copyright lines aren't on the 8×8 text layer writes at `$15229C` (that's only "credit"/"press start"). They're printed by `$152446` (print NUL-terminated string, pointer on stack) after `$152232` (set cursor: col.w, row.w on stack; rows/cols in 8 px units). Pattern: `move.w #row,-(a7) / move.w #col,-(a7) / jsr $152232 / pea str(pc) / jsr $152446 / addq.w #8,a7`.
+- Japan path `$158060`: rows `$17`/`$18`/`$19`, col 9, strings `$158528`/`$158548`/`$158568` (31 chars incl. padding). USA/Asia path `$157FF4`: rows `$16`–`$19`, strings `$1584A8`… Both continue at `$1580AE` (`move.w #$1F,-(a7) / jsr $152228`).
+- Found by: a read tap on the string bytes (`$1584A0`–`$15858F`) logging PC + stack → reader `$15245E`, caller return `$158078`.
+
+Implementation (`asm/title_text.asm`, `title_overpowered()`):
+- Hook `$1580AE` `3f3c001f 4eb900152228` → `jmp $178100.l` + 2×`nop`.
+- `$178100`: set cursor row `$13`, col `$13` (9 + (31-11)/2, centered on the copyright lines), print the string at `$178180`, replay the two replaced instructions, `jmp $1580B8`.
+- The string `"OVERPOWERED",0` at `$178180` is **data** (read by the print routine), so it's written unencrypted with `write_bytes()`; the code goes through `CodePatcher.place()` (encrypted). Lesson: never put data in a `place()` block, because it would be encrypted.
+- Patched CRCs: `mmx.01` a39b5635, `mmxj.03` 7782e303, `mmxj.05` 4a11bb64, `mmx.14m` 01eb615b, `mmx.16m` d976c4eb, `mmx.18m` f62c1d1e, `mmx.20m` d7dba6c9.
+- Verified in MAME: the title shows OVERPOWERED centered under the logo (screen x ≈ 152–238 of 384, rows ≈ 152–159), and the game still goes title → ship select → tutorial → stage 1 normally. The web data reproduces all 7 files.
+
 ## Testing in MAME
 
 The headless MAME env lives in WSL `~/mame` (WSL clears `/tmp` between commands, so keep test ROMs in e.g. `~/mame/roms_mmop`) (see the `mame0.289_dev_headless` repo). MAME doesn't know `mmatrixop`, so test as `mmatrixj` with a MAME-layout zip from `py overpowered.py ... --mame-zip mame_mmatrix.zip`:

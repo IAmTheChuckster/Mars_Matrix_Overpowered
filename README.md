@@ -10,6 +10,9 @@ I did all the testing and planning.
 
 ## Change Notes
 
+### Build 9 (27/11/27)
+- The title screen shows OVERPOWERED under the Mars Matrix logo.
+
 ### Build 8 (27/11/27)
 - Sound effects now play centered (they were hard left). Music keeps its normal left/right panning.
 
