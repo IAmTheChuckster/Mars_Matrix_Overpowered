@@ -10,6 +10,12 @@ I did all the testing and planning.
 
 ## Change Notes
 
+### Build 8 (27/11/27)
+- Sound effects now play centered (they were hard left). Music keeps its normal left/right panning.
+
+### Build 7 (27/11/27)
+- Fixed out-of-phase sound effects: QSound's 3D "virtual surround" processing is turned off, leaving plain stereo.
+
 ### Build 6 (26/11/26)
 - Fixed bullet cancelling: only enemy bullets on screen are turned into gold cubes. Build 4 hooked the wrong list (player shots / effects), which made walls of cubes and left enemy bullets alone.
 

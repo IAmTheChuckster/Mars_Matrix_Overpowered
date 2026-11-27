@@ -165,6 +165,32 @@ Implementation (`asm/bullet_cancel.asm`, `bullet_cancel()` in `overpowered.py`):
 - Patched CRCs: `mmx.01` 45a29ce5, `mmxj.03` 7782e303, `mmxj.05` 36f1ef1c, `mmx.14m` 01eb615b, `mmx.16m` d976c4eb, `mmx.18m` f62c1d1e, `mmx.20m` d7dba6c9.
 - Verified in MAME (standard input script, 3000 frames): the cube count peaks at 14 (Build 4: 70). At frames 1532 and 1536 enemy kills turn blue triple shots into 3 cubes each (bullets 26→21→16→11, cubes 0→3→6). Bullets with no kill nearby stay on screen, and screenshots show no cube walls. The web data reproduces all 7 changed files.
 
+### Build 7 (27/11/27)
+
+**Problem:** sound effects sound out of phase (the music is fine). This is in the **original game too**, not caused by trap15 or our patch: L/R correlation over 30 s of play is -0.61 in the original, -0.36 with trap15 and -0.37 in Build 6, dropping to about -0.9 whenever effects play. The title music sits at about +0.9.
+
+**Cause:** the QSound DSP's 3D virtualizer. The Z80 boot code (`mmx.01` `$00AB`) writes 12 DSP registers from the register list at `$00D5` (`DE DF E0 E1 E4 E5 E6 E7 E2 DA DC E3`) and little-endian word values at `$00E1` (`0000 002E 0000 0030 3FFF 3FFF 3FFF 3FFF FFFF 0DB2 0E11 0039`). `$E4`/`$E6` = wet (3D crosstalk-cancelling path) levels and `$E5`/`$E7` = dry levels. The wet path feeds anti-phase into the opposite channel.
+- Pan isn't the cause: every pan write (reg `$80+voice` from `$0473`/`$0882`/`$16FF`, value `$0110`+offset) stayed within `$110`–`$12C`, the normal stereo range.
+
+**Fix:** `qsound_plain_stereo()` sets `$E4`/`$E6` to 0 (bytes `mmx.01` `$00E9`/`$00ED`), leaving dry only.
+- Experiment: wet=0 → correlation +0.67, out-of-phase quarter-second windows 1/99 (min -0.04), RMS L/R 1507/1214. Dry=0 → also in phase but quiet and lopsided (608/963). Both on: 45/99 windows out of phase (min -0.94), RMS 1194/1048. Build 7 peak 10696/32767, no clipping.
+
+**Tools (repeatable):**
+- Audio: `scripts/run.sh <frames> -wavwrite work/out.wav` (works with `-sound none`), then per-window `np.corrcoef(L, R)`.
+- QSound register log: Lua write tap on `:audiocpu` program space `$D000`–`$D002` (`$D000` = data hi, `$D001` = data lo, `$D002` = register number, which triggers the write).
+- Z80 disassembly: run MAME with `-debug -debugger none` and a Lua harness that calls `manager.machine.debugger:command("dasm work/z80.asm,0,8000,1,:audiocpu")` (`-debugscript` didn't run in this headless build).
+
+- Patched CRCs (Build 7): `mmx.01` 05b770bb, `mmxj.03` 7782e303, `mmxj.05` 748ed38e (date 27/11/27), graphics as Build 5.
+
+### Build 8 (27/11/27)
+
+**Centered sound effects:** with the virtualizer off, sound effects came out of the left speaker only. The voice pan value `(ix+$47)` (0..$20 → QSound pan `$0110`+value) is 0 = hard left for sound effects. The voice structs are at `$F700`, `$50` bytes each, and `(ix+1)` ≠ 0 means a sound effect.
+- Pan sites: `$0466` (key-on loop from `$0432`) and `$0871` (logged writer `$089E`), both `ld e,(ix+47h) / ld a,(0F008h) / or a / jr nz,+2 / ld e,10h` (`$F008` = 0 is the game's MONO setting → center). `$16E3` (music pan command, logged `$16FF`) and `$0959` (reset all to `$120`) are untouched.
+- `asm/sfx_center.asm`: both sites → `call 7100h` + 8×`nop`. `sfx_pan` at `$7100` (free Z80 ROM after trap15's `$7000` code) returns e = `$10` (center) when MONO is on or `(ix+1)` ≠ 0, otherwise `(ix+$47)`. The Z80 isn't encrypted; `sfx_centered()` assembles it with trap15's AS (`CPU Z80`) and writes `mmx.01` directly, after checking the 11 original bytes at each site and that `$7100` is free.
+- Verified (same 30 s run): the effect pan writer now only writes `$120` (was `$110`), and the music pans are unchanged (`$114`–`$12C`). RMS L/R 1508/1558 (was 1507/1214), no quarter-second windows >6 dB to one side (was 9/99), correlation +0.91, 0/99 out of phase.
+
+- Patched CRCs: `mmx.01` a39b5635, `mmxj.03` 7782e303, `mmxj.05` a80db00d (build number), `mmx.14m` 01eb615b, `mmx.16m` d976c4eb, `mmx.18m` f62c1d1e, `mmx.20m` d7dba6c9. The web data reproduces all 7.
+
 ## Testing in MAME
 
 The headless MAME env lives in WSL `~/mame` (WSL clears `/tmp` between commands, so keep test ROMs in e.g. `~/mame/roms_mmop`) (see the `mame0.289_dev_headless` repo). MAME doesn't know `mmatrixop`, so test as `mmatrixj` with a MAME-layout zip from `py overpowered.py ... --mame-zip mame_mmatrix.zip`:

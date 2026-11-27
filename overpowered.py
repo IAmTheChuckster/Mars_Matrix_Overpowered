@@ -313,12 +313,49 @@ def red_ship_speed(roms: dict, code: CodePatcher) -> None:
         gfx_write_tile(roms, base + r * 16 + c, rows)
 
 
+def qsound_plain_stereo(roms: dict) -> None:
+    """Sound effects no longer sound out of phase: turn off QSound's 3D virtualizer.
+
+    At boot the Z80 (mmx.01, loop at $00AB) writes 12 QSound DSP registers from
+    a register list at $00D5 and a value table at $00E1 (little-endian words).
+    $E4/$E6 are the "wet" (3D crosstalk-cancelling) levels and $E5/$E7 the
+    "dry" levels, all $3FFF. The wet path puts anti-phase sound into the other
+    channel (L/R correlation down to -0.94 during play). Wet = 0 leaves plain
+    stereo with the game's normal panning.
+    """
+    z80 = roms["mmx.01"]
+    regs = z80[0x00D5:0x00E1]
+    for reg in (0xE4, 0xE6):
+        off = 0x00E1 + 2 * regs.index(reg)
+        if z80[off:off + 2] != b"\xff\x3f":
+            raise RuntimeError(f"QSound init value for register {reg:#x} is not $3FFF")
+        z80[off:off + 2] = b"\x00\x00"
+
+
+def sfx_centered(roms: dict, code: CodePatcher) -> None:
+    """Sound effects play centered instead of hard left (source: asm/sfx_center.asm)."""
+    syms, bytes_at = code.assemble(ASM_DIR / "sfx_center.asm")
+    z80 = roms["mmx.01"]
+    old_site = bytes.fromhex("dd5e473a08f0b720021e10")
+    for name in ("sc_hook1", "sc_hook2"):
+        start, end = syms[name], syms[name + "_end"]
+        if z80[start:end] != old_site:
+            raise RuntimeError(f"Z80 pan code at {start:#x} is not what was expected")
+        z80[start:end] = bytes_at(start, end)
+    start, end = syms["sfx_pan"], syms["sc_end"]
+    if any(z80[start:end]):
+        raise RuntimeError(f"Z80 ROM space at {start:#x} is not free")
+    z80[start:end] = bytes_at(start, end)
+
+
 def apply_tweaks(roms: dict, code: "CodePatcher", date: str, build: int) -> None:
     warning_screen(roms, date, build)
     chain_bar_half_drain(roms)
     ghb_code_patches(code)
     bullet_cancel(roms, code)
     red_ship_speed(roms, code)
+    qsound_plain_stereo(roms)
+    sfx_centered(roms, code)
     code.commit(roms)
 
 
