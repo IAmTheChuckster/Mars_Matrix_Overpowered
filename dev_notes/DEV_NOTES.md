@@ -556,6 +556,14 @@ Build 14 changed Kame's wreck type to `$100` (so the "cube" counted in that test
 - Verified in MAME (`extest5.lua`): with 3 lives, crossing 20,000,000,000 gave 4 (`$17CF66`); with lives set to 5 just before the crossing, there was no write.
 - Patched CRCs: `mmxj.03` ac065c81, `mmxj.05` 1678fc6f, `mmx.01` a39b5635.
 
+### Build 23 (26/11/28)
+
+**Extra-life chime for the score extra life** (`asm/extend.asm`).
+- The game's own extra lives (weapon level 4 at `$11EC9A`, the 1UP item at `$5658C`) call `$160BEE` (add a life; d0 bit 0 = P1, bit 1 = P2), then play sound `$72` with `clr.l -(a7) / clr.l -(a7) / move.w #$72,-(a7) / clr.w -(a7) / jsr $151E5E / lea 12(a7),a7`.
+- `ex_add` makes the same call (all registers saved) right after it raises the lives, so only when a life is really given (not at the cap).
+- Verified in MAME (`snd.lua`): at frame 1685 the score passed 100,000,000,000, lives went 2 -> 3 (`$17CF66`) and `$151E5E` put `$72` in the sound queue (`$FFAC86`, `pc=$151E80`) the same frame. Not listened to.
+- Patched CRCs: `mmxj.03` ac065c81, `mmxj.05` fb70c5c4, `mmx.01` a39b5635.
+
 ## Testing in MAME
 
 The headless MAME env lives in WSL `~/mame` (WSL clears `/tmp` between commands, so keep test ROMs in e.g. `~/mame/roms_mmop`) (see the `mame0.289_dev_headless` repo). MAME doesn't know `mmatrixop`, so test as `mmatrixj` with a MAME-layout zip from `py overpowered.py ... --mame-zip mame_mmatrix.zip`:

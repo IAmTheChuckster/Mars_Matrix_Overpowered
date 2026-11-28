@@ -5,7 +5,7 @@
 ; 6 bytes (movem.l d0/a0-a1,-(a7) / addq.w #6,a0) are replaced by a jmp to ex_add,
 ; which does the same add and then compares the score's top byte (the digits worth
 ; 10,000,000,000 and 100,000,000,000) before and after. For each step crossed, the
-; player's lives (the word just before the score) go up by one, up to 5.
+; player's lives (the word just before the score) go up by one, up to 5, with the game's extra-life chime.
 ; Game struct ($FF4978): P1 lives +$30, score +$32; P2 lives +$56, score +$58.
 ;
 ; Code is encrypted by overpowered.py.
@@ -18,6 +18,8 @@ SCORE_ADD	:= $0321B4
 P1_SCORE	:= $FF49AA
 P2_SCORE	:= $FF49D0
 MAX_LIVES	:= 5
+SOUND		:= $151E5E	; sound request (args on the stack, as the game's own calls)
+SND_1UP		:= $72		; extra-life chime
 
 	ORG	SCORE_ADD
 ex_hook:
@@ -67,6 +69,15 @@ ex_add:
 	moveq	#MAX_LIVES,d1
 .set:
 	move.w	d1,-2(a1)
+	; the extra-life chime (as the weapon level 4 extra life, $11EC9A)
+	movem.l	d0-d7/a0-a6,-(a7)
+	clr.l	-(a7)
+	clr.l	-(a7)
+	move.w	#SND_1UP,-(a7)
+	clr.w	-(a7)
+	jsr	(SOUND).l
+	lea	12(a7),a7
+	movem.l	(a7)+,d0-d7/a0-a6
 .done:
 	movem.l	(a7)+,d0-d2/a0-a1
 	rts

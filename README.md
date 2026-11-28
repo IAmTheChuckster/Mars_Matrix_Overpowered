@@ -10,6 +10,9 @@ I did all the testing and planning.
 
 ## Change Notes
 
+### Build 23 (26/11/28)
+- The extra life every 10,000,000,000 points now plays the game's extra-life chime (the one from reaching weapon level 4).
+
 ### Build 22 (26/11/28)
 - Extra lives from score stop at 5 lives (was 99).
 
