@@ -104,7 +104,7 @@ footer { font-size: 13px; color: var(--muted); text-align: center; }
   <header>
     <div class="eyebrow">Mars Matrix &middot; gameplay patch &middot; Build <span id="build-no"></span></div>
     <h1>Mars Matrix Overpowered</h1>
-    <p class="lede">Load your own MAME <span class="mono">mmatrix.zip</span>. The page checks the Japanese (<span class="mono">mmatrixj</span>) files against their known CRC32, applies the trap15 Mars Matrix Improvement v1.0.0 patch, and gives you <span class="mono">mmatrixop.zip</span>.</p>
+    <p class="lede">Load your own MAME <span class="mono">mmatrix.zip</span> and your Dreamcast Mars Matrix disc. The page checks the Japanese (<span class="mono">mmatrixj</span>) files against their known CRC32, applies the trap15 Mars Matrix Improvement v1.0.0 patch and the Overpowered changes, imports the Dreamcast Arrange mode enemy layouts from your disc, and gives you <span class="mono">mmatrixop.zip</span>.</p>
     <span class="privacy">Everything runs in your browser. Your ROMs are never uploaded.</span>
   </header>
 
@@ -117,8 +117,20 @@ footer { font-size: 13px; color: var(--muted); text-align: center; }
     </label>
   </section>
 
+  <section aria-labelledby="h-dc">
+    <div class="step"><span class="step-no">2</span><h2 id="h-dc">Load your Dreamcast disc</h2></div>
+    <label class="drop" id="drop-dc">
+      <input type="file" id="file-dc" class="visually-hidden" accept=".zip,.7z">
+      <strong>Drop the Dreamcast <span class="mono">Mars Matrix</span> disc (a <span class="mono">.zip</span> with the <span class="mono">.gdi</span> dump) here, or click to choose</strong>
+      <span class="hint">Japanese release (T-1238M). Used for the Arrange mode enemy layouts; only the game program is read from it.</span>
+      <span class="src" id="src-dc" hidden></span>
+    </label>
+    <div class="progress" id="dc-prog" hidden><div></div></div>
+    <div class="notice" id="dc-msg">Waiting for the Dreamcast disc.</div>
+  </section>
+
   <section aria-labelledby="h-check">
-    <div class="step"><span class="step-no">2</span><h2 id="h-check">Check files</h2></div>
+    <div class="step"><span class="step-no">3</span><h2 id="h-check">Check files</h2></div>
     <div class="table-scroll"><table>
       <thead><tr><th>File</th><th>Size</th><th>Expected CRC32</th><th>Found CRC32</th><th>Status</th></tr></thead>
       <tbody id="check-body"></tbody>
@@ -127,7 +139,7 @@ footer { font-size: 13px; color: var(--muted); text-align: center; }
   </section>
 
   <section aria-labelledby="h-out">
-    <div class="step"><span class="step-no">3</span><h2 id="h-out">Download the patched romset</h2></div>
+    <div class="step"><span class="step-no">4</span><h2 id="h-out">Download the patched romset</h2></div>
     <div class="table-scroll"><table>
       <thead><tr><th>File</th><th>CRC32</th><th>Status</th></tr></thead>
       <tbody id="out-body"></tbody>
@@ -140,11 +152,11 @@ footer { font-size: 13px; color: var(--muted); text-align: center; }
     <p class="hint"><span class="mono">mmatrixop.zip</span> holds the 15 files of the Japanese set with flat names: the patched files listed above, plus the rest unchanged. The <span class="mono">.mra</span> is for the MiSTer CPS2 core and also needs <span class="mono">qsound.zip</span>.</p>
   </section>
 
-  <footer>No ROM data is included in this page. It only rebuilds files from the dump you supply.</footer>
+  <footer>No ROM data is included in this page. It only rebuilds files from the dumps you supply.</footer>
 </div>
 <script>
 // Patch data generated from trap15.py output (trap15 Mars Matrix Improvement v1.0.0). See dev_notes.
-const BUILD = 9;
+const BUILD = 21;
 const ZIP_NAME = "mmatrixop.zip", MRA_NAME = "Mars Matrix Overpowered.mra";
 // output name -> [file name inside mmatrix.zip, size, CRC32]
 const FILES = {
@@ -160,9 +172,10 @@ const FILES = {
   "mmx.19m": ["mmx.19m", 4194304, 0x4400a3f2], "mmx.20m": ["mmx.20m", 4194304, 0x583a9687],
 };
 // file -> [[offset, new bytes hex], ...]; each patched file's CRC is verified before download
-const PATCHES = {"mmxj.03": [[4, "717d06e5"], [205354, "d4198f836bf39f15"]], "mmxj.05": [[105090, "e007d43e"], [105378, "ba69"], [105390, "39a9"], [105476, "5230"], [105482, "8005"], [119972, "2abf"], [125382, "b4"], [125386, "f0"], [125390, "2c01"], [125394, "6801"], [125398, "f401"], [125734, "62e4"], [125738, "8552"], [125936, "1702"], [325584, "0e8456d7f0f8"], [325768, "1498"], [325898, "7756be81688a"], [326068, "2ccb1d81"], [335948, "9905b291"], [335954, "929cd329284f09dc4d63397aff16523e7ac0f9c71f2ea8dda5803a62189028adfa5dca5f002dac030eb4df07a6a1e5d81b7dc69551f3f44c808fa0428d86d7332672c6a95d7c63096a8065308bf2"], [339992, "8cb18db8"], [345006, "7509169ead3da5e3"], [354828, "474b700a"], [354836, "7af2"], [354876, "a8ff410f"], [354908, "088d26bb"], [355106, "202032202f373131322f2037"], [355274, "4d2052412053414d525458494f2045565052574f52454445"], [355308, "42204955444c39202020"], [360622, "c8515ce94b789e38b009"], [361876, "8b5d9ab8"], [393284, "1d627d5f0ad8daf14c45"], [394692, "a6540f63"], [394738, "ab3ef5c4"], [491520, "78484122c86a2762e7ee43e749eaa36bf3acb9e6f1ed7a2f35292eb6032cae358ca97f373484301dd7a9ba59edeb25cef4f3b206b4bcb2027e3a2df62a2eb4ca2d86b5ec7d7e732f68600b5591fc6f566c9b6a2c365c50af47571b04e68801ed062da2e83a2f80d1fc7da5748eacbcd7c6d4ac305324b70dcbf86d70ea99f058fa06b13bc378d147354b338f7bd0f5b747dc243525915ee533e926517597db3452f05410471372c73d"], [491690, "e8fcb856fc9f7f49f289a7be76854b8beea8413e76ffa4f4e6042657"], [491776, "3fac0007086da3226a082ce0d1e0ba6d9f64a881906ceb43154be8d3664503b19685abd3ae480aeb060e192f"], [491904, "564f52454f50455745520044"], [523776, "c8f47f9b0708047bfbb01057fdbef1e00e633f39a7d4248aa8508807f19bd7b90864380e16bba1cc7c188096a8f2daebbc1582662a4681445a82512ce1dcc05dac146171b45bb54dd02fb966d1241fb1bceeaee66daf4c37820953f13c25eb7cd37dc6b5f71b410c8ab427f62e59ad58c2015d4cf2905e3b9b8b8c074a74edba8decb13195bde1721858c9b2871ff7e5398931edab18eef991c29fbb927146ff23a524aef9eeaad2e20cbed7d6ef3b2555be72fa439c6091113858bd905e443a4507f93697cd210a2fb209e5be0bc133b6e308024cde90440a3da561b0d2892a8d6dfd678e862810c1baf5980b9f2e337acfb218c169a5f8d0cf891652180641d3d8e75f5068d4b0cfd49a1f874d9a98db7991c9f7c1fc32b53480a3473e7267307269f64bdb180f501abd1a39d974d4c8ec5561dc301a3901a2f8d750168672e116d5f686e26614e2064bcab348c50db7bb17d184b4a8d5792434b54af1f11ebe1c898722bd7f0cdc2b24df78fedcc6579a7d0390a8690e60f55ea9a6a97dfbd36170ad7d9e7cecb039883dcd457e3f5550b48f70c28d1a6816"]], "mmx.01": [[233, "0000"], [237, "0000"], [1126, "cd00710000000000000000"], [2161, "cd00710000000000000000"], [8172, "dd7e01a7cd007000"], [28672, "281e3a10c0a72018d5545dcb3acb1ba7ed52cb3acb1bcb3acb1bcb3acb1b19d17d3201d07c3200d0c9"], [28928, "dd5e473a08f0b72805dd7e01b7c81e10c9"]], "mmx.14m": [[390052, "fefa"], [390056, "fe03"], [390061, "03"], [390065, "03"], [390069, "02"]], "mmx.16m": [[390052, "0602"], [390056, "fefa"], [390060, "fefa"], [390064, "fefa"], [390069, "02"]], "mmx.18m": [[389988, "fcf5"], [389992, "fd06"], [389997, "06"], [390001, "06"], [390005, "04"], [390052, "7ffd"], [390057, "01"], [390061, "01"], [390065, "01"], [390069, "01"]], "mmx.20m": [[389988, "0c04"], [389992, "fdf5"], [389996, "fdf5"], [390000, "fdf5"], [390005, "04"], [390052, "0301"], [390057, "fd"], [390061, "fd"], [390065, "fd"], [390069, "01"]]};
-const PATCHED_CRC = { "mmxj.03": 0x7782e303, "mmxj.05": 0x4a11bb64, "mmx.01": 0xa39b5635, "mmx.14m": 0x01eb615b, "mmx.16m": 0xd976c4eb, "mmx.18m": 0xf62c1d1e, "mmx.20m": 0xd7dba6c9 };
-const MRA_TEXT = "<!--          FPGA arcade hardware by Jotego\n\n              This core is available for hardware compatible with MiST and MiSTer\n              Other FPGA systems may be supported by the time you read this.\n              This work is not mantained by the MiSTer project. Please contact the\n              core author for issues and updates.\n\n              (c) Jose Tejada, 2026. Please support this research\n              Patreon: https://patreon.com/jotego\n\n              The author does not endorse or participate in illegal distribution\n              of copyrighted material. This work can be used with compatible\n              software. This software can be homebrew projects or legally\n              obtained memory dumps of compatible games.\n\n              This file license is GNU GPLv2.\n              You can read the whole license file in\n              https://opensource.org/licenses/gpl-2.0.php\n\n-->\n\n<misterromdescription>\n    <about author=\"jotego\" webpage=\"https://patreon.com/jotego\" twitter=\"@topapate\" source=\"https://jotego/jtcores\"/>\n    <rotation>horizontal</rotation>\n    <name>Mars Matrix Overpowered (27/11/27 Build 9)</name>\n    <setname>mmatrixop</setname>\n    <mameversion>0282</mameversion>\n    <year>2026</year>\n    <manufacturer>Takumi (Capcom license)</manufacturer>\n    <players>2</players>\n    <rbf>jtcps2</rbf>\n    <joystick>8</joystick>\n    <region>World</region>\n    <rom index=\"0\" zip=\"mmatrixop.zip|qsound.zip\" md5=\"None\" address=\"0x30000000\" asm_md5=\"54cabd177d8a461131e37fed6564976d\">\n        <!--  -->\n        <part>\n            00 06 80 06 80 26 80 A6\n            FF FF FF FF FF FF FF FF\n            32 FF 00 02 04 06 26 28\n            2A 2C 2E 00 00 30 02 04\n            08 30 FF FF FF FF FF FF\n            FF FF FF FF </part>\n        <!-- key - starts at 0x0 - length 0x14 (5 bits) -->\n        <part name=\"mmatrixj.key\" crc=\"3b50d889\"/>\n        <!-- maincpu - starts at 0x14 - length 0x180000 (21 bits) -->\n        <part name=\"mmxj.03\" crc=\"7782e303\"/>\n        <part name=\"mmxj.04\" crc=\"d943a339\"/>\n        <part name=\"mmxj.05\" crc=\"4a11bb64\"/>\n        <!-- audiocpu - starts at 0x180014 - length 0x20000 (17 bits) -->\n        <part name=\"mmx.01\" crc=\"a39b5635\"/>\n        <!-- qsound - starts at 0x1A0014 - length 0x800000 (23 bits) -->\n        <interleave output=\"16\">\n            <part name=\"mmx.11m\" crc=\"4180b39f\" map=\"12\"/>\n        </interleave>\n        <interleave output=\"16\">\n            <part name=\"mmx.12m\" crc=\"95e22a59\" map=\"12\"/>\n        </interleave>\n        <!-- gfx - starts at 0x9A0014 - length 0x2000000 (25 bits) -->\n        <interleave output=\"64\">\n            <part name=\"mmx.13m\" crc=\"04748718\" map=\"00000021\"/>\n            <part name=\"mmx.15m\" crc=\"38074f44\" map=\"00002100\"/>\n            <part name=\"mmx.17m\" crc=\"e4635e35\" map=\"00210000\"/>\n            <part name=\"mmx.19m\" crc=\"4400a3f2\" map=\"21000000\"/>\n        </interleave>\n        <interleave output=\"64\">\n            <part name=\"mmx.14m\" crc=\"01eb615b\" map=\"00000021\"/>\n            <part name=\"mmx.16m\" crc=\"d976c4eb\" map=\"00002100\"/>\n            <part name=\"mmx.18m\" crc=\"f62c1d1e\" map=\"00210000\"/>\n            <part name=\"mmx.20m\" crc=\"d7dba6c9\" map=\"21000000\"/>\n        </interleave>\n        <!-- firmware - starts at 0x29A0014 - length 0x2000 (13 bits) -->\n        <part name=\"dl-1425.bin\" crc=\"d6cf5ef5\" length=\"0x2000\"/>\n        <!-- Total 0x29A2014 bytes - 42632 kBytes -->\n    </rom>\n    <rom index=\"2\">\n        <part>\n61 43 4D 70 55 4D 41 53 00 00 00 00 00 00 00 00\n00 00 00 01 01 01 02 01 00 03 02 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n</part>\n    </rom>\n    <nvram index=\"2\" size=\"128\"/>\n    <rom index=\"1\">\n        <part>00 80</part>\n    </rom>\n    <switches page_id=\"1\" page_name=\"Switches\" base=\"16\" default=\"ff,ff\">\n        <DSWA/>\n        <DSWB/>\n        <DSWC/>\n    </switches>\n    <buttons names=\"Shot,Rapid Cannon,Rapid Shot,-,-,-,Start,Coin,Core credits\" default=\"A,B,X,Start,Select,-\" count=\"1\"/>\n</misterromdescription>\n";
+const PATCHES = {"mmxj.03": [[4, "717d06e5"], [205236, "b1eca177e9cb"], [205354, "d4198f836bf39f15"], [206918, "17"], [206921, "f81700c0f817002af9"]], "mmxj.05": [[105090, "e007d43e"], [105378, "ba69"], [105390, "39a9"], [105476, "5230"], [105482, "8005"], [119972, "2abf"], [125382, "b4"], [125386, "f0"], [125390, "2c01"], [125394, "6801"], [125398, "f401"], [125734, "62e4"], [125738, "8552"], [125936, "1702"], [148064, "6ed1d224"], [180798, "a386"], [183846, "df9e"], [220592, "3f28"], [222928, "8196"], [250396, "c1e2bacf0e127119aea16ed8b6efade79cdabc4b4a588ec548a7b05f1fafb56c7122d2a00b33d3273ffbb0eb0d1dcec99ff224423ea59f975be60c80f8cc60f2680f941283e62d10e8c03d84ab17681e1aaffa5e8c354c4640b59e76676ced016d79699e8b5076718bff18a09fb71dd2b5e4786812f5339c638d6306fa07ec56b778"], [250925, "a1d571245a"], [251136, "a8020a9b"], [280438, "f4186955"], [312998, "ed15ebfed32c7f51ea6e"], [325584, "0e8456d7f0f8"], [325768, "1498"], [325898, "7756be81688a"], [326068, "2ccb1d81"], [335948, "9905b291"], [335954, "929cd329284f09dc4d63397aff16523e7ac0f9c71f2ea8dda5803a62189028adfa5dca5f002dac030eb4df07a6a1e5d81b7dc69551f3f44c808fa0428d86d7332672c6a95d7c63096a8065308bf2"], [339992, "8cb18db8"], [345006, "7509169ead3da5e3"], [354828, "474b700a"], [354836, "7af2"], [354876, "a8ff410f"], [354908, "088d26bb"], [355106, "202032202f363131322f2038"], [355274, "4d2052412053414d525458494f2045565052574f52454445"], [355308, "42204955444c32202031"], [360292, "50bf055389e08bed2082c82e98bf6a05"], [360622, "c8515ce94b789e38b009"], [361876, "8b5d9ab8"], [393284, "1d627d5f0ad8daf14c45"], [394692, "a6540f63"], [394738, "ab3ef5c4"], [491520, "78484122c86a2762e7ee43e749eaa36bf3acb9e6f1ed7a2f35292eb6032cae358ca97f373484301dd7a9ba59edeb25cef4f3b206b4bcb2027e3a2df62a2eb4ca2d86b5ec7d7e732f68600b5591fc6f566c9b6a2c365c50af47571b04e68801ed062da2e83a2f80d1fc7da5748eacbcd7c6d4ac305324b70dcbf86d70ea99f058fa06b13bc378d147354b338f7bd0f5b747dc243525915ee533e926517597db3452f05410471372c73d"], [491690, "e8fcb856fc9f7f49f289a7be76854b8beea8413e76ffa4f4e6042657"], [491776, "5f7c83d2c9e7d61c603479675c12abd61ca46fe4fcc4ffe6e8d20232ca0bfa3198fd30c7bc6a4d6c9f0fe15425ea6babba7f6ba2ac5cd97af6281b9e9e4b2dcc65cb2d1450b76e472ca36364da5fad60bf35ef28d9d8"], [491904, "564f52454f50455745520044"], [492032, "aa9106d2605492e0eefafc2e782c98e4701eae24dc5d490db6e6f8cced57a4f4238aa7a13773446e5a1aff167b0b9c8fbc275a33ed0cca9656d72cbd2743b2e5650f4db3b7969db8030444a8e60681b40cf80985f7c5ddaea52a8d26cd04416ec3a6c19ab53eba63df66487df3d42d24b6b37d8530a5df6440baa779cae7fcc8c31f159d1eed6b433eefc862e5661dc535d8718c6630a87f5110e82f821aed4472fe31e18214690312bf4788d5532b1d8b58f2ce16427cfc96763880e01da49431ead481d731c9a4d37a457f"], [492237, "a518a3b1b8fbde85f9cd23168a43995b02dc75e371580270519e10c39ecce90e0892450f8e"], [492448, "4f2049524947414e204c20203e00524f47494e494c4120200020412052524e414547202020203e0052414152474e2045202000204f2045565052574f5245444520"], [492514, "202020202020202020200020"], [511744, "310c029d1eac2099dd55bc4c3509d12e53c67970e3d5ac76268c82cefe0b4a37904d46fe4fbf85bb2f97404e24920b0fea5f3c2ce15e9361d0d44d94d218979c478a5b4cb4eac4e62ae019999edfdc35af946adbe9a88f3d88"], [511834, "3bf5902e6d61219a05de1644b011a870cf689e38f8e56ae89cf6"], [512000, "f2e05f97681d95f2769ecc75752b8422cf45c4b9423b7e4c12354a2958cb40889bdf7383c737f080c30c329f09f3c783c3f7f6e6d051d799935f9558473fcbc70bbb5c4019bbcf3a7fddd48ac9af32bc5bfac9f61ae7a91fb02bb0666c1e70886d0b7bcb1d4c9ab9e923b24b8bb25189e980eb8f496efb3c90545ca1e9ae2225504c21f09e1f921e79da2f2cb304b43f7283271d3e35b357fd313f725ccafdaaa0f9aa3c356bb89080bd8787719666c04f1df9ce5940819b81c034d11a212fbd87fae34b84c8d296edb34cead22ba9ce2e042d782c8b54e001d18a6690a54337d8487aef5b73092d626d1eb4cd8a5c7172d9c29a13a47fdca1a8d0b7ea3aab025824741aba2fb9b6ca77bb7c211295a9f1583bd52497cf75377a41449eace75e7632fc36f963b5b6d1f2ae4508cc8f8de4cd5573ecdcb33a56f4c36416d5d27439cb87e8774ca3ade5cf387a197a5b40742ce4f3d2871389365e08e4359fe160a6d1f856079e2c73472bb9d40fce3b751db151881e3347f8a9d98081baf5859d9ca252a10c7155153dd15259222914ce236dece3e3cef112263e8a2dfbeda38c4bdad8c192571984dd7cd4a0311e83ba15ce6cb3b5a8c529"], [512441, "831f27ead7e16eaafb3c838d5b105923e34e7b9269058198229731556797678b100506a24626eb1afccbd0540b21b9c0fb4c23b206e06c15b9ebd38f5b6eba08da90426247689ec50299f519bd90613fcb865e62d5e9519652b4c5c874e35359d725efdc466a69e5835c576358fb3263c23cecac2bcc4183a809943b84f22e16659e4555d7ee838fed80991abb2027b77344e235b24df256b5370673b363d1f45092c51cb210465026efca97dca219a0fe88fff206f6f1fb6c4b7f4965e4af08907d7bdf4a759757d9a706d68f2d37e05c351f5ad65f287deb9d21f794849b87ab591badbd62c70c186fb119d850371f"], [512682, "b811497978c4f2d8e0c798a0c25ce867b6903bc46316682972200fb478e5ccbc5abd0db7edb343237123680a4dd6aed23155b95a91969dec02cac56c2c6b00d1afcfd2687062454a6ccf4d45aadeb0a791655332c57a1a7b5672dfdef6902ef3b4f2a6ddc39de0475b5fd0084772a20dc3fe8688d5ea22be22145c26a9bfe07a9a136b60098dff10df0d8c3f5d99330165476354699760ee5ca53b47575d23e1f2484590133a6b25f215bbad4d18a5e4d5a6e4042a9ed80ffce4cd1ddbd570a12cd0036bdb5e3de98bc7893bad"], [512888, "0420fa2d92f997eab479e0f29be1f3842cd1ea9a2baea13f16355bbe0616f15dc8ed26c53fd183e9c4bb1a30be44155ff51c528eb21e43b3e92eb633592a808bae3331b464b7c6694d7c75d0ad6e5480668ac545ac4919a5203aa78c0f39e2a2172575df78240a4218d044371cc1d9b856392bb084647af1434f6b0ddaf6b0a87d6527e00864cc1f67245397d513ae5a887fb17b48e5bca106f72c8180d2d9e8bb4a0c261aa6ff86de80a8d435d2ce308e0853f4d2a6b08b5b898af040c369c2615b83c3daec59a48d3f063b2b01237c8a9cb19cd2e52d94a724854d8fe2e8fb39a49d2b5f5924425e78e45ac17b39c23ffb312fcbaae1d025c39b5755e8e32a7a861087aab534eb70ffccc4538f975162d35db3a0c9e9f861c8b429bebc42d496f2fc77"], [513181, "f29339b67bd74274170b1d047ccde9f2043c44a88f917a0a502306e1d897cd70fa1c1fa5e04f9c52996e61a76a1b0c0a069f22030c3269bad20142bfe18537ec1a28190ebb52bd9e55185df204dae36699fe2da3ee"], [513267, "daa2b388f0585c86ae7f1982289298f23e48f899e3d451e99281075d334dfa4710794cf7b27fc4c559634c091e9a82b35bca1f645c424e2379790f9620d1332f3317fab6965b240dd2467c5db1799cd21fe766cabc3afefc454ecb46150f33a573eb39ceceb00fd3988ba861b766865b54899c9965fd2816431afa72e1336499881d6ea0d4ee8593a8c737b0fd02b846ff57a22e22d8a03c3ac1e04c8d693f6a2feee6bfa82244e70dc7d8c27a181b94e95e7a0577a869b687510962ae261e26c009c2c116731e2adcf0114ce6c58a2168403b6a646f9a5f0aad22ff17faa16cc28aea54627018af5b6abd8e51e2a1828b7e1de5f172062a145563ca74ac5bc53465bd76c0746801b8edc7dd5f5cc13b4c40fa07fea110c03ac784e11499e0d0c7ff809c604a7c03e582af5b97f3b4022b5732256a813aeaa72047debe9a5b81810b25c4cc7c1828dceb16baf4ebe688e884821dcb980c54cacbbd5957f595ce72877b6f1076603009ce4d11a75a1dc233908af7690af2b7e73323b18eb776bc25e04d844c1951f8f3d9e7a549499707631f623286e118b239e81088b13afcd5319f7586c48003148355666d1429d1bd662a71735b29fa388a07949ce2a7240ac650d2b20cdde449cd44066f78a79d1faa99f71c7f11962fb11464ae7c468ee8b03d673a5fdebf4b52ff25a1c5f4fe023889bb623431a05fa59a765b73e8548db745ef983189a16c195bb71a1257ff5c8adef6e31de8e4a962c33ca9ed777ef7270caa0c1de06d363e21ce8485166850b26d4d88b7d607e7a8b9045b27dd016e1a48afa31e37ab2525198d4837ca6816104fe401a989a7c4ae7e9e96730ddc75d96a4cde86f632b9d2cb2de6aac2bbdf1fd7c36f1b4b473ee7de3436d87dd6c84ed475fa1a928aa28cba389d4755b54df98f536160a2be4cece0c93eed1acf72323bb29e0906c44a974d1820dbe24599ec1c7a7e7ca00934ee168823d23883c5201f6714fcf6134fd95b6c29a1c30dd249ee8c4bd9be2fd64b1bbba62f46cb87126d4aea64b7a29a33b1c6708a01cae4c7e3368214de3f70b5a09c25ae4b5ece8b83d0f4f76b6133f9aa2ad1eaa57e0c643c87e02678dcf90586b394c67655cce06c69d67bfa2576a9e5f63ca5efead974657eb936cbfb1534115886805702a4c8cbcbe360574db199719073d45872b2fb0e71da05dc8be2b35326361a8c9262d47d5e7422d3f9694f60bd1c62053c8386cb65cdbd65e93b361dd7d405bc7c56b976e68dfe6aa8d9d08a3c4c42e896be3aec57fc940b45a4c229c484cba74f7c104ea9704103882534893275e4e240d75fc59244f14f5c7060c89471d8824c74f1c3b6bfbfa1b88bc9e296d4516c7ac6e0e3e950d2d5b91531a10e4c7fd22966b06fb2d55238fa16b09ce247d26180d81cb4fbf8cb65e4625356d927a6598405d506c09e367644f1908082136c13239a2f8c451c9b"], [522240, "6148616e6962"], [522256, "030070001700acd017"], [522267, "d01700c4d0170082d1170096d132"], [522296, "30"], [522304, "684362750069"], [522320, "030076001700c0d117"], [522331, "d01700dcd1170086d217009ed232"], [522360, "10"], [522368, "6853626f0069"], [522384, "03006e0017001ad317"], [522395, "d017003ad31700ead31700fed30a"], [522424, "10"], [522432, "4554504c004f"], [522448, "0300740017001ed4170044d417004ed417006cd51700b8d564"], [522488, "30"], [522496, "8086400317003ed5"], [522506, "f0ff"], [522510, "070010"], [522516, "010001"], [522524, "3c00140017"], [522531, "d017"], [522535, "d0ffff615a006e"], [522554, "030074001700ead5170026d6170098d6170030d7170044d764"], [522594, "10"], [522602, "7a5a"], [522618, "03007000170062d717"], [522629, "d017007cd71700d4d717"], [522641, "d0"], [522666, "635a"], [522682, "03007400170012d8170026d617002ed8170030d7170044d7"], [522722, "10"], [522730, "8086e000170012d7"], [522746, "18"], [522750, "010001"], [522758, "3c000a0017"], [522765, "d017"], [522769, "d0ffff8086200303003218"], [522786, "0f0018"], [522791, "070100010014"], [522804, "17"], [522807, "d017"], [522811, "d0ffff"], [523776, "c8f47f9b0708047bfbb01057fdbef1e00e633f39a7d4248aa8508807f19bd7b90864380e16bba1cc7c188096a8f2daebbc1582662a4681445a82512ce1dcc05dac146171b45bb54dd02fb966d1241fb1bceeaee66daf4c37820953f13c25eb7cd37dc6b5f71b410c8ab427f62e59ad58c2015d4cf2905e3b9b8b8c074a74edba8decb13195bde1721858c9b2871ff7e5398931edab18eef991c29fbb927146ff23a524aef9eeaad2e20cbed7d6ef3b2555be72fa439c6091113858bd905e443a4507f93697cd210a2fb209e5be0bc133b6e308024cde90440a3da561b0d2892a8d6dfd678e862810c1baf5980b9f2e337acfb218c169a5f8d0cf891652180641d3d8e75f5068d4b0cfd49a1f874d9a98db7991c9f7c1fc32b53480a3473e7267307269f64bdb180f501abd1a39d974d4c8ec5561dc301a3901a2f8d750168672e116d5f686e26614e2064bcab348c50db7bb17d184b4a8d5792434b54af1f11ebe1c898722bd7f0cdc2b24df78fedcc6579a7d0390a8690e60f55ea9a6a97dfbd36170ad7d9e7cecb039883dcd457e3f5550b48f70c28d1a6816"]], "mmx.01": [[233, "0000"], [237, "0000"], [1126, "cd00710000000000000000"], [2161, "cd00710000000000000000"], [8172, "dd7e01a7cd007000"], [28672, "281e3a10c0a72018d5545dcb3acb1ba7ed52cb3acb1bcb3acb1bcb3acb1b19d17d3201d07c3200d0c9"], [28928, "dd5e473a08f0b72805dd7e01b7c81e10c9"]], "mmx.14m": [[390052, "fefa"], [390056, "fe03"], [390061, "03"], [390065, "03"], [390069, "02"], [778365, "ff"], [780412, "ffff"], [782460, "ffff"], [784508, "ffff"], [788668, "ffff"]], "mmx.16m": [[390052, "0602"], [390056, "fefa"], [390060, "fefa"], [390064, "fefa"], [390069, "02"], [778365, "ff"], [780412, "ffff"], [782460, "ffff"], [784509, "ff"], [788669, "ff"]], "mmx.18m": [[389988, "fcf5"], [389992, "fd06"], [389997, "06"], [390001, "06"], [390005, "04"], [390052, "7ffd"], [390057, "01"], [390061, "01"], [390065, "01"], [390069, "01"], [778301, "ff"], [780413, "ff"], [782460, "ffff"], [784508, "ffff"], [786556, "ffff"], [788605, "ff"]], "mmx.20m": [[389988, "0c04"], [389992, "fdf5"], [389996, "fdf5"], [390000, "fdf5"], [390005, "04"], [390052, "0301"], [390057, "fd"], [390061, "fd"], [390065, "fd"], [390069, "01"], [778301, "ff"], [780413, "ff"], [782460, "ffff"], [784508, "ffff"], [786556, "ffff"], [788605, "ff"]]};
+const PATCHED_CRC = { "mmxj.03": 0xac065c81, "mmxj.05": 0x3727b060, "mmx.01": 0xa39b5635, "mmx.14m": 0x8f2de77d, "mmx.16m": 0x8790e311, "mmx.18m": 0x1fb89c96, "mmx.20m": 0xaf1f5b11 };
+const ARRANGE = {"dcBase": 2348875776, "lists": [2350156608, 2350166044, 2350177576, 2350185084, 2350190668, 2350200068], "stageTable": 1363692, "arrTable": 1519392, "missing": [], "regions": [[1519776, 1540096], [1541120, 1560320]], "file": "mmxj.05", "fileBase": 1048576, "groups": [[2350832108, 32, 185312, 1568768], [2350832620, 32, 225840, 1569280], [2350833132, 32, 251040, 1569792], [2350844484, 18, 225968, 1570304], [2350847824, 12, 251072, 1570592]], "slots": [1008, 1024], "cgData": 819852, "palettes": 461206, "dx": 64, "dy": -16, "gfx": [["mmx.13m", "mmx.15m", "mmx.17m", "mmx.19m"], ["mmx.14m", "mmx.16m", "mmx.18m", "mmx.20m"]], "programRoms": [["mmxj.03", 0], ["mmxj.04", 524288], ["mmxj.05", 1048576]]};
+const MRA_TEXT = "<!--          FPGA arcade hardware by Jotego\n\n              This core is available for hardware compatible with MiST and MiSTer\n              Other FPGA systems may be supported by the time you read this.\n              This work is not mantained by the MiSTer project. Please contact the\n              core author for issues and updates.\n\n              (c) Jose Tejada, 2026. Please support this research\n              Patreon: https://patreon.com/jotego\n\n              The author does not endorse or participate in illegal distribution\n              of copyrighted material. This work can be used with compatible\n              software. This software can be homebrew projects or legally\n              obtained memory dumps of compatible games.\n\n              This file license is GNU GPLv2.\n              You can read the whole license file in\n              https://opensource.org/licenses/gpl-2.0.php\n\n-->\n\n<misterromdescription>\n    <about author=\"jotego\" webpage=\"https://patreon.com/jotego\" twitter=\"@topapate\" source=\"https://jotego/jtcores\"/>\n    <rotation>horizontal</rotation>\n    <name>Mars Matrix Overpowered (26/11/28 Build 21)</name>\n    <setname>mmatrixop</setname>\n    <mameversion>0282</mameversion>\n    <year>2026</year>\n    <manufacturer>Takumi (Capcom license)</manufacturer>\n    <players>2</players>\n    <rbf>jtcps2</rbf>\n    <joystick>8</joystick>\n    <region>World</region>\n    <rom index=\"0\" zip=\"mmatrixop.zip|qsound.zip\" md5=\"None\" address=\"0x30000000\" asm_md5=\"54cabd177d8a461131e37fed6564976d\">\n        <!--  -->\n        <part>\n            00 06 80 06 80 26 80 A6\n            FF FF FF FF FF FF FF FF\n            32 FF 00 02 04 06 26 28\n            2A 2C 2E 00 00 30 02 04\n            08 30 FF FF FF FF FF FF\n            FF FF FF FF </part>\n        <!-- key - starts at 0x0 - length 0x14 (5 bits) -->\n        <part name=\"mmatrixj.key\" crc=\"3b50d889\"/>\n        <!-- maincpu - starts at 0x14 - length 0x180000 (21 bits) -->\n        <part name=\"mmxj.03\" crc=\"ac065c81\"/>\n        <part name=\"mmxj.04\" crc=\"d943a339\"/>\n        <part name=\"mmxj.05\" crc=\"3727b060\"/>\n        <!-- audiocpu - starts at 0x180014 - length 0x20000 (17 bits) -->\n        <part name=\"mmx.01\" crc=\"a39b5635\"/>\n        <!-- qsound - starts at 0x1A0014 - length 0x800000 (23 bits) -->\n        <interleave output=\"16\">\n            <part name=\"mmx.11m\" crc=\"4180b39f\" map=\"12\"/>\n        </interleave>\n        <interleave output=\"16\">\n            <part name=\"mmx.12m\" crc=\"95e22a59\" map=\"12\"/>\n        </interleave>\n        <!-- gfx - starts at 0x9A0014 - length 0x2000000 (25 bits) -->\n        <interleave output=\"64\">\n            <part name=\"mmx.13m\" crc=\"04748718\" map=\"00000021\"/>\n            <part name=\"mmx.15m\" crc=\"38074f44\" map=\"00002100\"/>\n            <part name=\"mmx.17m\" crc=\"e4635e35\" map=\"00210000\"/>\n            <part name=\"mmx.19m\" crc=\"4400a3f2\" map=\"21000000\"/>\n        </interleave>\n        <interleave output=\"64\">\n            <part name=\"mmx.14m\" crc=\"8f2de77d\" map=\"00000021\"/>\n            <part name=\"mmx.16m\" crc=\"8790e311\" map=\"00002100\"/>\n            <part name=\"mmx.18m\" crc=\"1fb89c96\" map=\"00210000\"/>\n            <part name=\"mmx.20m\" crc=\"af1f5b11\" map=\"21000000\"/>\n        </interleave>\n        <!-- firmware - starts at 0x29A0014 - length 0x2000 (13 bits) -->\n        <part name=\"dl-1425.bin\" crc=\"d6cf5ef5\" length=\"0x2000\"/>\n        <!-- Total 0x29A2014 bytes - 42632 kBytes -->\n    </rom>\n    <rom index=\"2\">\n        <part>\n61 43 4D 70 55 4D 41 53 00 00 00 00 00 00 00 00\n00 00 00 01 01 01 02 01 00 03 02 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n</part>\n    </rom>\n    <nvram index=\"2\" size=\"128\"/>\n    <rom index=\"1\">\n        <part>00 80</part>\n    </rom>\n    <switches page_id=\"1\" page_name=\"Switches\" base=\"16\" default=\"ff,ff\">\n        <DSWA/>\n        <DSWB/>\n        <DSWC/>\n    </switches>\n    <buttons names=\"Shot,Rapid Cannon,Rapid Shot,-,-,-,Start,Coin,Core credits\" default=\"A,B,X,Start,Select,-\" count=\"1\"/>\n</misterromdescription>\n";
 
 const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
 function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC_TABLE[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
@@ -172,7 +185,7 @@ const fromHex = (s) => Uint8Array.from(s.match(/../g) || [], (h) => parseInt(h, 
 (() => {
   const $ = (id) => document.getElementById(id);
   const fmtSize = (n) => n >= 1048576 ? (n / 1048576) + " MB" : n.toLocaleString() + " B";
-  const state = { data: null, result: null };
+  const state = { data: null, result: null, dc: null };
   $("build-no").textContent = BUILD;
   // ---------- zip reading ----------
   function readZipDir(buf) {
@@ -285,9 +298,16 @@ const fromHex = (s) => Uint8Array.from(s.match(/../g) || [], (h) => parseInt(h, 
         data[n] = await zipEntryData(buf, found[n]);
         if (crc32(data[n]) !== FILES[n][2]) throw new Error(`${n} is damaged inside the zip (CRC doesn't match after unpacking).`);
       }
-      state.data = data; build();
-      msg($("check-msg"), "ok", "All 15 files match.");
+      state.data = data;
+      msg($("check-msg"), "ok", state.dc ? "All 15 files match." : "All 15 files match. Now load the Dreamcast disc (step 2).");
+      tryBuild();
     } catch (err) { msg($("check-msg"), "bad", err.message || String(err)); }
+  }
+
+  function tryBuild() {
+    if (!state.data || !state.dc) return;
+    try { build(); }
+    catch (err) { resetOutput(); msg($("out-notes"), "bad", err.message || String(err)); }
   }
 
   function build() {
@@ -295,13 +315,254 @@ const fromHex = (s) => Uint8Array.from(s.match(/../g) || [], (h) => parseInt(h, 
     for (const [n, list] of Object.entries(PATCHES)) {
       const out = state.data[n].slice();
       for (const [off, hex] of list) out.set(fromHex(hex), off);
-      if (crc32(out) !== PATCHED_CRC[n]) throw new Error(`Patching ${n} gave an unexpected CRC. Nothing was written.`);
       res[n] = out;
     }
+    for (const f of [ARRANGE.file, ...ARRANGE.programRoms.map((r) => r[0]), ...ARRANGE.gfx.flat()]) {
+      if (!res[f]) res[f] = state.data[f].slice();
+    }
+    arrangeImport(res, state.dc);
+    for (const n of Object.keys(PATCHED_CRC)) {
+      if (!res[n] || crc32(res[n]) !== PATCHED_CRC[n]) throw new Error(`Building ${n} gave an unexpected CRC. Nothing was written. (Is the Dreamcast disc the Japanese release?)`);
+    }
     state.result = res;
-    $("out-body").innerHTML = Object.keys(PATCHES).map((n) => `<tr><td class="mono">${n}</td><td class="mono">${hex8(PATCHED_CRC[n])}</td><td><span class="pill ok">Build ${BUILD}</span></td></tr>`).join("");
+    $("out-body").innerHTML = Object.keys(PATCHED_CRC).map((n) => `<tr><td class="mono">${n}</td><td class="mono">${hex8(PATCHED_CRC[n])}</td><td><span class="pill ok">Build ${BUILD}</span></td></tr>`).join("");
     $("dl-romset").disabled = $("dl-mra").disabled = false;
   }
+
+  // ---------- Dreamcast Arrange mode import (same as arrange_layouts() in overpowered.py) ----------
+  function arrangeImport(res, dcf) {
+    const A = ARRANGE, base = A.fileBase, B = A.dcBase, rom = res[A.file], dc = dcf.prog;
+    const rd = (a, n) => { const o = new Uint8Array(n); for (let i = 0; i < n; i++) o[i] = rom[(a - base + i) ^ 1]; return o; };
+    const wr = (a, bytes) => { for (let i = 0; i < bytes.length; i++) rom[(a - base + i) ^ 1] = bytes[i]; };
+    const dv = new DataView(dc.buffer, dc.byteOffset, dc.byteLength);
+    const regions = A.regions.map((r) => r.slice());
+    const alloc = (size) => {
+      size += size & 1;
+      for (const r of regions) {
+        if (r[1] - r[0] >= size) {
+          const a = r[0]; r[0] += size;
+          if (rd(a, size).some((b) => b)) throw new Error(`ROM space at 0x${a.toString(16)} is not free.`);
+          return a;
+        }
+      }
+      throw new Error("Not enough free ROM for the Arrange layouts.");
+    };
+    const rec = (t, x, y, fl, cl, sc, c, d) => {
+      const o = new Uint8Array(14), v = new DataView(o.buffer);
+      v.setUint16(0, t); v.setUint16(2, x); v.setUint16(4, y); o[6] = fl; o[7] = cl; v.setUint32(8, sc); o[12] = c; o[13] = d;
+      return o;
+    };
+    if (rd(A.arrTable, 6 * 0x40).some((b) => b)) throw new Error("ROM space for the Arrange stage table is not free.");
+    wr(A.arrTable, rd(A.stageTable, 6 * 0x40));
+    const endRec = rec(0x7FFF, 0, 0, 0, 0, 0, 0, 0);
+    const empty = alloc(14); wr(empty, endRec);
+    A.lists.forEach((head, s) => {
+      const recs = []; let a = head;
+      for (;;) {
+        const o = a - B, t = dv.getUint16(o, true);
+        if (t === 0x7FFF) break;
+        const x = dv.getUint16(o + 2, true), y = dv.getUint16(o + 4, true), fl = dv.getUint16(o + 6, true);
+        const cl = dv.getUint16(o + 8, true), pad = dv.getUint16(o + 10, true);
+        const sc = dv.getUint32(o + 12, true), c = dv.getUint16(o + 16, true), d = dv.getUint16(o + 18, true);
+        if (Math.max(fl, cl, c, d) > 0xFF || pad) throw new Error("This doesn't look like the Japanese Dreamcast Mars Matrix program.");
+        recs.push([t, x, y, fl, cl, sc, c, d]); a += 20;
+      }
+      const lo = Math.min(...recs.map((r) => r[5]));
+      const blob = dc.subarray(lo - B, head - B);
+      const sbase = alloc(blob.length); wr(sbase, blob);
+      const kept = recs.filter((r) => !A.missing.includes(r[4]));
+      const out = new Uint8Array(kept.length * 14 + 14);
+      kept.forEach((r, i) => out.set(rec(r[0], r[1], r[2], r[3], r[4], sbase + (r[5] - lo), r[6], r[7]), i * 14));
+      out.set(endRec, kept.length * 14);
+      const lst = alloc(out.length); wr(lst, out);
+      const entry = A.arrTable + s * 0x40;
+      if (new TextDecoder().decode(rd(entry, 7)) !== `STAGE ${s + 1}`) throw new Error(`Arcade stage table entry ${s + 1} not found.`);
+      const p = new Uint8Array(8), pv = new DataView(p.buffer); pv.setUint32(0, empty); pv.setUint32(4, lst); wr(entry + 0x1C, p);
+    });
+    hanabiArt(res, dcf);
+  }
+
+  // ---------- Hanabi/Chubi/Shobi art from the Dreamcast disc (same as hanabi_art() in overpowered.py) ----------
+  let gfxPerm = null;
+  function gfxLoc(offset) {            // decoded gfx byte offset -> [ROM name, file offset]
+    if (!gfxPerm) {
+      const rec = (lo, n) => {
+        if (n === 2) return [lo, lo + 1];
+        const h2 = n / 2, l = rec(lo, h2), r = rec(lo + h2, h2), q = h2 / 2;
+        return [...l.slice(0, q), ...r.slice(0, q), ...l.slice(q), ...r.slice(q)];
+      };
+      gfxPerm = Int32Array.from(rec(0, 0x200000 / 8));
+    }
+    const bank = Math.floor(offset / 0x200000), o = offset % 0x200000;
+    const raw = bank * 0x200000 + gfxPerm[o >> 3] * 8 + (o & 7);
+    const half = Math.floor(raw / 0x1000000), r = raw % 0x1000000;
+    return [ARRANGE.gfx[half][(r % 8) >> 1], Math.floor(r / 8) * 2 + (r % 2)];
+  }
+  function gfxTileEmpty(res, code) {
+    for (let i = 0; i < 128; i++) { const [n, o] = gfxLoc(code * 128 + i); if (res[n][o] !== 0xFF) return false; }
+    return true;
+  }
+  function gfxWriteTile(res, code, px) {  // px[y*16+x] = 0..15
+    for (let y = 0; y < 16; y++) for (let hh = 0; hh < 2; hh++) {
+      const b = [0, 0, 0, 0];
+      for (let x = 0; x < 8; x++) { const v = px[y * 16 + hh * 8 + x]; for (let p = 0; p < 4; p++) b[p] |= ((v >> p) & 1) << (7 - x); }
+      for (let i = 0; i < 4; i++) { const [n, o] = gfxLoc(code * 128 + y * 8 + hh * 4 + i); res[n][o] = b[i]; }
+    }
+  }
+  function cgTile(cg, cv, code) {        // Dreamcast tile decompressor ($8C110474)
+    let p = ARRANGE.cgData + (cv.getUint32(code * 4, true) & 0x7FFFFFFF), cur = 0, left = 0;
+    const out = [];
+    const bit = () => { if (--left < 0) { cur = cg[p++]; left = 7; } return (cur >> left) & 1; };
+    let width = 0, limit = 1;
+    while (out.length < 128) {
+      while (width < 12 && limit < out.length) { width++; limit <<= 1; }
+      if (!bit()) { out.push(cg[p++]); continue; }
+      let n = 0;
+      for (;;) { n = n * 2 + bit(); if (bit()) break; }
+      n += 1;
+      let off = 0;
+      for (let k = (n === 1 && width > 5) ? 5 : width; k > 0; k--) off = off * 2 + bit();
+      for (let k = 0; k < n; k++) out.push(out[out.length - off - 1]);
+    }
+    const px = new Uint8Array(256);       // twiddled 4bpp -> arcade pixels (DC colour c -> c-1, 0 -> 15)
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
+      let i = 0;
+      for (let b = 0; b < 4; b++) i |= ((y >> b) & 1) << (2 * b) | ((x >> b) & 1) << (2 * b + 1);
+      px[y * 16 + x] = (((out[i >> 1] >> (4 * (i & 1))) & 15) - 1) & 15;
+    }
+    return px;
+  }
+  function hanabiArt(res, dcf) {      // dc_sprites() in overpowered.py
+    const A = ARRANGE, B = A.dcBase, dv = new DataView(dcf.prog.buffer, dcf.prog.byteOffset);
+    const cv = new DataView(dcf.cg.buffer, dcf.cg.byteOffset), pv = new DataView(dcf.pal.buffer, dcf.pal.byteOffset);
+    const loc = (a) => { let r = A.programRoms[0]; for (const x of A.programRoms) if (a >= x[1]) r = x; return [r[0], a - r[1]]; };
+    const rd = (a, n) => { const o = new Uint8Array(n); for (let i = 0; i < n; i++) { const [f, off] = loc(a + i); o[i] = res[f][off ^ 1]; } return o; };
+    const wr = (a, bytes) => { for (let i = 0; i < bytes.length; i++) { const [f, off] = loc(a + i); res[f][off ^ 1] = bytes[i]; } };
+    const filler = rd(A.palettes + 0x3FF * 32, 32);
+    const slots = new Map(); let nextSlot = A.slots[0];
+    for (const [srcTable, count, base, dstTable] of A.groups) {
+      const table = new Uint8Array(count * 16), tv = new DataView(table.buffer);
+      let row = 0, col = 0, band = 0;
+      for (let k = 0; k < count; k++) {
+        const e = srcTable - B + k * 16, w = [];
+        for (let i = 0; i < 8; i++) w.push(dv.getUint16(e + 2 * i, true));
+        const fw = ((w[6] >> 8) & 15) + 1, fh = ((w[6] >> 12) & 15) + 1;
+        if (w[7] || (w[2] & 0x1FFF)) throw new Error("Unexpected sprite table in the Dreamcast program.");
+        if (col + fw > 16 || (band && fh !== band)) { row += band; col = 0; band = 0; }
+        const dst = base + row * 16 + col;
+        col += fw; band = Math.max(band, fh);
+        const src = w[3] * 0x10000 + w[4];
+        for (let ty = 0; ty < fh; ty++) for (let tx = 0; tx < fw; tx++) {
+          const code = dst + tx + 16 * ty;
+          if (!gfxTileEmpty(res, code)) throw new Error(`Arcade tile 0x${code.toString(16)} is not empty.`);
+          gfxWriteTile(res, code, cgTile(dcf.cg, cv, src + tx + 16 * ty));
+        }
+        const dcpal = w[5] & 0x7FF;
+        if (!slots.has(dcpal)) {
+          const slot = nextSlot++;
+          if (slot >= A.slots[1]) throw new Error("No free arcade palette slots left.");
+          slots.set(dcpal, slot);
+          if (!rd(A.palettes + slot * 32, 32).every((b, i) => b === filler[i])) throw new Error(`Arcade palette 0x${slot.toString(16)} is in use.`);
+          const pal = new Uint8Array(32), pw = new DataView(pal.buffer);
+          for (let j = 0; j < 16; j++) {
+            const v = pv.getUint16(dcpal * 32 + ((j + 1) & 15) * 2, true);
+            pw.setUint16(j * 2, 0xF000 | ((v >> 11) & 15) << 8 | ((v >> 6) & 15) << 4 | ((v >> 1) & 15));
+          }
+          wr(A.palettes + slot * 32, pal);
+        }
+        const t = k * 16;
+        tv.setUint16(t, (w[0] + A.dx) & 0xFFFF); tv.setUint16(t + 2, (w[1] + A.dy) & 0xFFFF); tv.setUint16(t + 4, w[2]);
+        tv.setUint16(t + 6, Math.floor(dst / 0x10000) << 13); tv.setUint16(t + 8, dst & 0xFFFF); tv.setUint16(t + 10, slots.get(dcpal)); tv.setUint16(t + 12, w[6]);
+      }
+      if (rd(dstTable, table.length).some((b) => b)) throw new Error(`ROM space at 0x${dstTable.toString(16)} is not free.`);
+      wr(dstTable, table);
+    }
+  }
+
+  // ---------- Dreamcast disc: zip with a .gdi dump -> 00MMXDC.BIN, CG.MMX, PAL.MMX ----------
+  async function readDcProgram(file, progress) {
+    if (/[.]7z$/i.test(file.name)) throw new Error("7z archives aren't supported yet. Please re-pack the disc as a .zip (the .gdi and its track files).");
+    const tailStart = Math.max(0, file.size - 65557);
+    const tail = new Uint8Array(await file.slice(tailStart).arrayBuffer()), tv = new DataView(tail.buffer);
+    let eocd = -1;
+    for (let i = tail.length - 22; i >= 0; i--) if (tv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+    if (eocd < 0) throw new Error("This file is not a readable zip.");
+    const cdSize = tv.getUint32(eocd + 12, true), cdOff = tv.getUint32(eocd + 16, true);
+    if (cdOff === 0xFFFFFFFF) throw new Error("Zip64 archives are not supported. Re-zip the disc normally.");
+    const cd = new Uint8Array(await file.slice(cdOff, cdOff + cdSize).arrayBuffer()), cv = new DataView(cd.buffer);
+    let track = null, hasGdi = false;
+    for (let p = 0; p + 46 <= cd.length && cv.getUint32(p, true) === 0x02014b50;) {
+      const nl = cv.getUint16(p + 28, true), xl = cv.getUint16(p + 30, true), cl = cv.getUint16(p + 32, true);
+      const name = new TextDecoder().decode(cd.subarray(p + 46, p + 46 + nl)).toLowerCase();
+      if (name.endsWith(".gdi")) hasGdi = true;
+      if (name.endsWith("track03.bin")) track = { method: cv.getUint16(p + 10, true), csize: cv.getUint32(p + 20, true), size: cv.getUint32(p + 24, true), local: cv.getUint32(p + 42, true) };
+      p += 46 + nl + xl + cl;
+    }
+    if (!hasGdi || !track) throw new Error("No .gdi dump found in this zip (it needs the .gdi file and track03.bin).");
+    const lh = new DataView(await file.slice(track.local, track.local + 30).arrayBuffer());
+    const start = track.local + 30 + lh.getUint16(26, true) + lh.getUint16(28, true);
+    let stream = file.slice(start, start + track.csize).stream();
+    if (track.method === 8) stream = stream.pipeThrough(new DecompressionStream("deflate-raw"));
+    else if (track.method !== 0) throw new Error(`track03.bin uses an unsupported compression method (${track.method}).`);
+    // sequential reader over the decompressed track (2352-byte sectors, user data at +16, track starts at LBA 45000)
+    const reader = stream.getReader();
+    let chunk = new Uint8Array(0), cpos = 0, pos = 0;
+    async function readAt(off, n) {
+      if (off < pos) throw new Error("internal: out-of-order read");
+      const out = new Uint8Array(n); let got = 0;
+      while (got < n) {
+        if (cpos >= chunk.length) {
+          const r = await reader.read();
+          if (r.done) throw new Error("The Dreamcast track ended early.");
+          chunk = r.value; cpos = 0; progress(pos / track.size);
+        }
+        const skip = Math.min(off - pos, chunk.length - cpos); cpos += skip; pos += skip;
+        if (pos < off) continue;
+        const take = Math.min(n - got, chunk.length - cpos);
+        out.set(chunk.subarray(cpos, cpos + take), got); got += take; cpos += take; pos += take; off += take;
+      }
+      return out;
+    }
+    const sector = (lba) => readAt((lba - 45000) * 2352 + 16, 2048);
+    const sectors = async (lba, size) => {
+      const out = new Uint8Array(Math.ceil(size / 2048) * 2048);
+      for (let i = 0; i * 2048 < size; i++) out.set(await sector(lba + i), i * 2048);
+      return out.subarray(0, size);
+    };
+    const pvd = await sector(45016), pv = new DataView(pvd.buffer);
+    if (new TextDecoder().decode(pvd.subarray(1, 6)) !== "CD001") throw new Error("track03.bin doesn't contain a Dreamcast file system.");
+    const root = await sectors(pv.getUint32(158, true), pv.getUint32(166, true)), rv = new DataView(root.buffer, root.byteOffset);
+    const want = { "00MMXDC.BIN": "prog", "CG.MMX": "cg", "PAL.MMX": "pal" }, found = [];
+    for (let i = 0; i < root.length;) {
+      const len = root[i];
+      if (!len) { i = (Math.floor(i / 2048) + 1) * 2048; continue; }
+      const name = new TextDecoder().decode(root.subarray(i + 33, i + 33 + root[i + 32])).split(";")[0];
+      if (want[name]) found.push({ key: want[name], lba: rv.getUint32(i + 2, true), size: rv.getUint32(i + 10, true) });
+      i += len;
+    }
+    if (found.length !== 3) throw new Error("This disc isn't Mars Matrix (00MMXDC.BIN, CG.MMX or PAL.MMX not found).");
+    const files = {};
+    for (const f of found.sort((a, b) => a.lba - b.lba)) files[f.key] = (await sectors(f.lba, f.size)).slice();
+    reader.cancel().catch(() => {});
+    progress(1);
+    if (!new TextDecoder("latin1").decode(files.prog).includes("ARRANGE MODE (A)")) throw new Error("This disc's program doesn't look like Mars Matrix (Japan).");
+    return files;
+  }
+
+  async function loadDc(files) {
+    const file = files && files[0]; if (!file) return;
+    state.dc = null; resetOutput();
+    $("src-dc").textContent = file.name; $("src-dc").hidden = false;
+    const bar = $("dc-prog"); bar.hidden = false; bar.firstElementChild.style.width = "0%";
+    msg($("dc-msg"), "", "Reading the Dreamcast disc… (it's decompressed in your browser; this can take a minute)");
+    try {
+      state.dc = await readDcProgram(file, (f) => { bar.firstElementChild.style.width = Math.round(f * 100) + "%"; });
+      msg($("dc-msg"), "ok", state.data ? "Dreamcast disc OK: Arrange layouts found." : "Dreamcast disc OK: Arrange layouts found. Now load mmatrix.zip (step 1).");
+      tryBuild();
+    } catch (err) { msg($("dc-msg"), "bad", err.message || String(err)); }
+    finally { bar.hidden = true; }
+  }
+
 
   async function zipItems() {
     const items = [];
@@ -335,6 +596,11 @@ const fromHex = (s) => Uint8Array.from(s.match(/../g) || [], (h) => parseInt(h, 
   });
   $("dl-mra").addEventListener("click", (ev) => save(MRA_NAME, new Blob([MRA_TEXT], { type: "application/xml" }), ev.currentTarget));
 
+  const dropDc = $("drop-dc");
+  $("file-dc").addEventListener("change", (e) => loadDc(e.target.files));
+  ["dragenter", "dragover"].forEach((t) => dropDc.addEventListener(t, (e) => { e.preventDefault(); dropDc.classList.add("over"); }));
+  ["dragleave", "drop"].forEach((t) => dropDc.addEventListener(t, (e) => { e.preventDefault(); dropDc.classList.remove("over"); }));
+  dropDc.addEventListener("drop", (e) => loadDc(e.dataTransfer.files));
   const drop = $("drop");
   $("file").addEventListener("change", (e) => loadFiles(e.target.files));
   ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
