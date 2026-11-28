@@ -22,7 +22,7 @@
 <misterromdescription>
     <about author="jotego" webpage="https://patreon.com/jotego" twitter="@topapate" source="https://jotego/jtcores"/>
     <rotation>horizontal</rotation>
-    <name>Mars Matrix Overpowered (26/11/28 Build 21)</name>
+    <name>Mars Matrix Overpowered (26/11/28 Build 22)</name>
     <setname>mmatrixop</setname>
     <mameversion>0282</mameversion>
     <year>2026</year>
@@ -45,7 +45,7 @@
         <!-- maincpu - starts at 0x14 - length 0x180000 (21 bits) -->
         <part name="mmxj.03" crc="ac065c81"/>
         <part name="mmxj.04" crc="d943a339"/>
-        <part name="mmxj.05" crc="3727b060"/>
+        <part name="mmxj.05" crc="1678fc6f"/>
         <!-- audiocpu - starts at 0x180014 - length 0x20000 (17 bits) -->
         <part name="mmx.01" crc="a39b5635"/>
         <!-- qsound - starts at 0x1A0014 - length 0x800000 (23 bits) -->

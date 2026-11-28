@@ -10,8 +10,11 @@ I did all the testing and planning.
 
 ## Change Notes
 
+### Build 22 (26/11/28)
+- Extra lives from score stop at 5 lives (was 99).
+
 ### Build 21 (26/11/28)
-- An extra life every 10,000,000,000 points (at 10, 20, 30 billion and so on), for both players, in both ORIGINAL and ARRANGE. Lives are capped at 99.
+- An extra life every 10,000,000,000 points (at 10, 20, 30 billion and so on), for both players, in both ORIGINAL and ARRANGE. Lives are capped at 99 (5 from Build 22).
 
 ### Build 20 (26/11/28)
 - More gold cube fixes to match the Dreamcast: Une (the small fliers of stages 1, 2, 3 and 5) now drops two small cubes, one scattered and one on the spot, and CHOZ (stage 6) drops the double cube instead of the small one.

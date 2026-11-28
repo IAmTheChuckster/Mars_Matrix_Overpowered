@@ -5,7 +5,7 @@
 ; 6 bytes (movem.l d0/a0-a1,-(a7) / addq.w #6,a0) are replaced by a jmp to ex_add,
 ; which does the same add and then compares the score's top byte (the digits worth
 ; 10,000,000,000 and 100,000,000,000) before and after. For each step crossed, the
-; player's lives (the word just before the score) go up by one.
+; player's lives (the word just before the score) go up by one, up to 5.
 ; Game struct ($FF4978): P1 lives +$30, score +$32; P2 lives +$56, score +$58.
 ;
 ; Code is encrypted by overpowered.py.
@@ -17,7 +17,7 @@
 SCORE_ADD	:= $0321B4
 P1_SCORE	:= $FF49AA
 P2_SCORE	:= $FF49D0
-MAX_LIVES	:= 99
+MAX_LIVES	:= 5
 
 	ORG	SCORE_ADD
 ex_hook:
@@ -58,7 +58,10 @@ ex_add:
 	bsr.s	ex_bin			; d0 = old, d1 = new (binary)
 	sub.w	d0,d1
 	ble.s	.done
-	add.w	-2(a1),d1
+	move.w	-2(a1),d0
+	cmpi.w	#MAX_LIVES,d0
+	bhs.s	.done			; already at the cap (or above it): no change
+	add.w	d0,d1
 	cmpi.w	#MAX_LIVES,d1
 	bls.s	.set
 	moveq	#MAX_LIVES,d1

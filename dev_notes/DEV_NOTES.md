@@ -549,6 +549,13 @@ Build 14 changed Kame's wreck type to `$100` (so the "cube" counted in that test
 - No extend sound or message.
 - Patched CRCs: `mmxj.03` ac065c81, `mmxj.05` 3727b060, `mmx.01` a39b5635. 
 
+### Build 22 (26/11/28)
+
+**Extra lives stop at 5** (`asm/extend.asm`, `MAX_LIVES` 99 -> 5).
+- `ex_add` now leaves lives alone when they are already 5 or more (so a higher starting-lives setting is never cut down), otherwise adds the steps crossed and caps the result at 5.
+- Verified in MAME (`extest5.lua`): with 3 lives, crossing 20,000,000,000 gave 4 (`$17CF66`); with lives set to 5 just before the crossing, there was no write.
+- Patched CRCs: `mmxj.03` ac065c81, `mmxj.05` 1678fc6f, `mmx.01` a39b5635.
+
 ## Testing in MAME
 
 The headless MAME env lives in WSL `~/mame` (WSL clears `/tmp` between commands, so keep test ROMs in e.g. `~/mame/roms_mmop`) (see the `mame0.289_dev_headless` repo). MAME doesn't know `mmatrixop`, so test as `mmatrixj` with a MAME-layout zip from `py overpowered.py ... --mame-zip mame_mmatrix.zip`:
